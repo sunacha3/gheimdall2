@@ -1,0 +1,108 @@
+# Django settings for gheimdall2 project.
+
+import logging
+import os
+
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+INTERNAL_IPS = ('127.0.0.1')
+
+#CONFDIR = os.path.join(os.path.dirname(__file__), 'conf')
+CONFDIR = '/etc/gheimdall2'
+EXTCONFDIR = os.path.join(CONFDIR, "conf.d")
+CONFFILE = 'gheimdall2.conf'
+
+#file_logger = logging.FileHandler("/var/log/gheimdall2/error.log")
+#file_logger.setLevel(logging.debug)
+#formatter = logging.Formatter('%(pathname)s: %(lineno)d %(name)-12s: %(levelname)-8s %(message)s')
+#file_logger.setFormatter(formatter)
+#logging.getLogger('').addHandler(file_logger)
+
+ADMINS = (
+    ('admin', 'admin@example.com'),
+)
+
+MANAGERS = ADMINS
+
+EMAIL_HOST = 'localhost'
+
+DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#DATABASE_OPTIONS = {"init_command": "SET storage_engine=INNODB"}
+DATABASE_NAME = '/var/gheimdall2/gheimdall2.sqlite'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'gheimdall2'             # Not used with sqlite3.
+DATABASE_PASSWORD = 'gheimdall2'         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'America/Chicago'
+
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'en-us'
+
+SITE_ID = 1
+
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/')
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+if DEBUG:
+  MEDIA_URL = 'http://wikid.shehas.net/static/'
+else:
+  MEDIA_URL = '/gheimdall2/static/'
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/media/'
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'h#xua$vzc)zzglgosc(!!c8xkctjluxsvo!6rp!%q=9wgwoza0'
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+  'django.template.loaders.filesystem.load_template_source',
+  'django.template.loaders.app_directories.load_template_source',
+#   'django.template.loaders.eggs.load_template_source',
+)
+
+MIDDLEWARE_CLASSES = (
+  'gheimdall2.middleware.handle_exception.StandardExceptionMiddleware',
+  'gheimdall2.middleware.cache_control.CacheControlMiddleware',
+  'gheimdall2.middleware.ua.UserAgentMobileMiddleware',
+  'django.middleware.locale.LocaleMiddleware',
+  'django.middleware.common.CommonMiddleware',
+  'django.contrib.sessions.middleware.SessionMiddleware',
+  'djangologging.middleware.LoggingMiddleware',
+)
+
+ROOT_URLCONF = 'gheimdall2.urls'
+
+TEMPLATE_DIRS = (
+  # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+  # Always use forward slashes, even on Windows.
+  # Don't forget to use absolute paths, not relative paths.
+  os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
+)
+
+MOBILE_TEMPLATE_DIR = 'mobile'
+
+INSTALLED_APPS = (
+  'django.contrib.sessions',
+  'gheimdall2.idp',
+)
+
+STATIC_DOC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'static')

@@ -1,0 +1,17 @@
+{% extends 'idp/base.html' %}
+{% load i18n %}
+{% block content %}
+<div id="formBox">
+
+ <h1>{% trans 'Login' %}</h1>
+ <div><form action="login.do" class="tableform" method="post" name="login_form">
+  <table cellpadding="2" cellspacing="0" border="0">
+  {{ form }}
+  <tr>
+  <td></td><td><input type="submit" class="submitbutton" value="{% trans 'Login' %}"/></td>
+  </tr>
+  </table>
+  </form>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'idp/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Change password' %}{% endblock %}
+{% block content %}
+<div id="formBox">
+
+ <h1>{% trans 'Change password' %}</h1>
+ <p>{{ user_name }}@{{ domain }}</p>
+ <div><form action="passwd.do" class="tableform" method="post" name="passwd_form">
+  <table cellpadding="2" cellspacing="0" border="0">
+  {{ form }}
+  <tr>
+  <td></td><td><input type="submit" class="submitbutton" value="{% trans 'Change password' %}"/></td>
+  </tr>
+  </table>
+  </form>
+ </div>
+{% if backURL %}
+<p><a href="{{ backURL }}">{% trans 'Back' %}</a></p>
+{% endif %}
+</div>
+{% endblock %}

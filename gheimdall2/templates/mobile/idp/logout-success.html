@@ -1,0 +1,7 @@
+{% extends 'mobile/idp/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Logged out' %}{% endblock %}
+{% block content %}
+  <font size="+1">{% trans 'You have successfully logged out.' %}</font>
+  <a href="{{ url }}">{% trans 'Login again' %}</a>
+{% endblock %}

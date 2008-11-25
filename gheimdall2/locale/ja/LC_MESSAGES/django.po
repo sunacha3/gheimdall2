@@ -1,0 +1,254 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GHeimdall2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-11-24 23:33-0600\n"
+"PO-Revision-Date: 2008-11-21 18:42+0900\n"
+"Last-Translator: Takashi Matsuo <tmatsuo@sios.com>\n"
+"Language-Team: psg-tech <psg-tech@sios.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: utf-8\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: idp/models.py:12 idp/models.py:28
+msgid "User Name:"
+msgstr "ユーザー名:"
+
+#: idp/models.py:15
+msgid "Password:"
+msgstr "パスワード:"
+
+#: idp/models.py:19
+msgid "Remember me on this computer:"
+msgstr "次回は入力を省略:"
+
+#: idp/models.py:31
+msgid "Old password:"
+msgstr "今までのパスワード:"
+
+#: idp/models.py:35
+msgid "New password:"
+msgstr "新しいパスワード:"
+
+#: idp/models.py:38
+msgid "Confirm:"
+msgstr "もう一度: "
+
+#: idp/models.py:47
+msgid "New password does not match"
+msgstr "新しいパスワードが一致しません"
+
+#: idp/views.py:71
+msgid "Can not login"
+msgstr "ログインできません"
+
+#: idp/views.py:146
+msgid "Failed to change password"
+msgstr "パスワードの変更に失敗しました。"
+
+#: templates/404.html:4 templates/404.html.py:6
+msgid "Page not found"
+msgstr "ページが見つかりません"
+
+#: templates/404.html:8
+msgid "We're sorry, but the requested page could not be found."
+msgstr "リクエストされたページは見つかりませんでした。"
+
+#: templates/500.html:3
+msgid "Server error (500)"
+msgstr "サーバーエラー (500)"
+
+#: templates/500.html:5
+msgid "Server Error <em>(500)</em>"
+msgstr "サーバーエラー <em>(500)</em>"
+
+#: templates/500.html:6
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+"エラーが発生しました。このエラーはサイト管理者に e-mail で通知されましたの"
+"で、すぐに修正されるでしょう。ご迷惑をおかけして済みません。"
+
+#: templates/idp/login-success.html:7 templates/idp/logout.html:8
+msgid "Please wait a second..."
+msgstr "お待ちください...      "
+
+#: templates/idp/login-success.html:11 templates/idp/login.html:6
+#: templates/idp/login.html.py:11 templates/mobile/idp/login.html:4
+#: templates/mobile/idp/login.html.py:7
+msgid "Login"
+msgstr "ログイン"
+
+#: templates/idp/logout-success.html:3
+#: templates/mobile/idp/logout-success.html:3
+msgid "Logged out"
+msgstr "ログアウト"
+
+#: templates/idp/logout-success.html:5
+#: templates/mobile/idp/logout-success.html:5
+msgid "You have successfully logged out."
+msgstr "ログアウトしました"
+
+#: templates/idp/logout-success.html:6
+#: templates/mobile/idp/logout-success.html:6
+msgid "Login again"
+msgstr "もう一度ログインする"
+
+#: templates/idp/logout.html:3 templates/mobile/idp/logout.html:3
+msgid "Logging out..."
+msgstr "ログアウトしています..."
+
+#: templates/idp/logout.html:10
+msgid "logout"
+msgstr "ログアウト"
+
+#: templates/idp/passwd-success.html:3 templates/idp/passwd-success.html:7
+#: templates/mobile/idp/passwd-success.html:3
+#: templates/mobile/idp/passwd-success.html:5
+msgid "Your password has changed."
+msgstr "パスワードが変更されました。"
+
+#: templates/idp/passwd-success.html:10 templates/idp/passwd.html:19
+#: templates/mobile/idp/passwd-success.html:8
+#: templates/mobile/idp/passwd.html:12
+msgid "Back"
+msgstr "戻る"
+
+#: templates/idp/passwd.html:3 templates/idp/passwd.html.py:7
+#: templates/idp/passwd.html:13 templates/mobile/idp/passwd.html:3
+#: templates/mobile/idp/passwd.html.py:5 templates/mobile/idp/passwd.html:9
+msgid "Change password"
+msgstr "パスワードの変更"
+
+#: templates/mobile/idp/login-success.html:7
+msgid "continue logging in"
+msgstr "ログインを続ける"
+
+#: templates/mobile/idp/logout.html:6
+msgid "continue logging out"
+msgstr "ログアウトを続ける"
+
+#~ msgid "Close"
+#~ msgstr "閉じる"
+
+#~ msgid "config section"
+#~ msgstr "設定セクション"
+
+#~ msgid "config sections"
+#~ msgstr "設定セクション"
+
+#~ msgid "parent section"
+#~ msgstr "親セクション"
+
+#~ msgid "section name"
+#~ msgstr "セクション名"
+
+#~ msgid "Section name can't contain dot."
+#~ msgstr "セクション名にはドットを使用できません。"
+
+#~ msgid "config item"
+#~ msgstr "設定アイテム"
+
+#~ msgid "config items"
+#~ msgstr "設定アイテム"
+
+#~ msgid "key"
+#~ msgstr "キー"
+
+#~ msgid "value"
+#~ msgstr "値"
+
+#~ msgid "Key can't contain dot."
+#~ msgstr "キーにはドットを使用できません。"
+
+#~ msgid "Password is expired. You need to set new password."
+#~ msgstr ""
+#~ "パスワードの期限が切れています。新しいパスワードを設定してください。"
+
+#~ msgid "Changing password is not available here"
+#~ msgstr "ここではパスワードの変更は出来ません。"
+
+#~ msgid "404 - No such page here"
+#~ msgstr "404 - そのようなページはありません     "
+
+#~ msgid "Error occurred."
+#~ msgstr "エラーが発生しました。"
+
+#~ msgid "Title"
+#~ msgstr "タイトル"
+
+#~ msgid "Logging in..."
+#~ msgstr "ログインしています..."
+
+#~ msgid "Could not handle logout request"
+#~ msgstr "ログアウトの処理ができませんでした "
+
+#~ msgid "Not available"
+#~ msgstr "パスワードの変更はできません"
+
+#~ msgid "Reset User's password"
+#~ msgstr "パスワードのリセット"
+
+#~ msgid "Password was reset."
+#~ msgstr "パスワードはリセットされました。\n"
+
+#~ msgid "Your title goes here"
+#~ msgstr "タイトルが入ります"
+
+#~ msgid "Oops! An error occured"
+#~ msgstr "システムエラーが発生しました。\n"
+
+#~ msgid "-The Team"
+#~ msgstr "--システム管理チームより\n"
+
+#~ msgid ""
+#~ "A programmer has been notified and\n"
+#~ "    will try to fix the problem as soon as possible."
+#~ msgstr ""
+#~ "開発者に通知が届きました。彼らがなるべく早く問題を解決するはずです。\n"
+
+#~ msgid "Our sincerest apologies,"
+#~ msgstr "ご迷惑をおかけして申し訳ございません。\n"
+
+#~ msgid "Something went wonky and we weren't expecting it. Sorry about that."
+#~ msgstr "我々の想定していなかった問題が発生してしまいました。済みません。\n"
+
+#~ msgid ""
+#~ "The problem was actually so bad that\n"
+#~ "    we couldn't even send an E-mail to our team to sort the problem out!\n"
+#~ "    If you keep getting this message, please send us an E-mail with some\n"
+#~ "    information about what you were doing when this happened, so we can\n"
+#~ "    try and smooth things over :-)"
+#~ msgstr ""
+#~ "問題は深刻なようです。開発者に通知する事もできませんでしたので、我々に、あ"
+#~ "なたが何をしていてこうなったかをメールで伝えていただけますでしょうか。そう"
+#~ "すれば我々は問題を解決する事ができるかもしれません。\n"
+
+#~ msgid ""
+#~ "This is commonly known as an \"Error 500  \" or\n"
+#~ "    \"Internal Server Error\". It means we messed up."
+#~ msgstr "「Error: 500」が発生しました。\n"
+
+#~ msgid "The value of SAMLRequest is wrong"
+#~ msgstr "SAMLRequest の値が不正です"
+
+#~ msgid "Input does not match our password policy"
+#~ msgstr "パスワードポリシーに合致しません"
+
+#~ msgid "Please enter a value"
+#~ msgstr "入力してください    \n"
+
+#~ msgid "The input must be a string (not a %(type)s: %(value)r)"
+#~ msgstr "文字列を入力してください (%(type)s: %(value)r ではなく)"
+
+#~ msgid "The input must be a string (not None)"
+#~ msgstr "文字列を入力してください (None ではなく)"
+
+#~ msgid "Reset"
+#~ msgstr "リセット"

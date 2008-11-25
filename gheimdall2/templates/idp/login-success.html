@@ -1,0 +1,13 @@
+{% extends 'idp/base.html' %}
+{% load i18n %}
+{% block body %}
+<body onload='javascript:document.acsForm.submit()'>
+{% endblock %}
+{% block content %}
+  <font size="+1">{% trans 'Please wait a second...' %}</font>
+  <form name="acsForm" action="{{ acsURL }}" method="post">
+    <input type="hidden" name="SAMLResponse" value="{{ SAMLResponse }}" />
+    <input type="hidden" name="RelayState" value="{{ RelayState }}" />
+    <input type="submit" value="{% trans 'Login' %}"/>
+  </form>
+{% endblock %}

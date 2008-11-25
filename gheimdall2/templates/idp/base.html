@@ -1,0 +1,20 @@
+{% load i18n %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="{{MEDIA_URL}}css/main.css" rel="stylesheet" type="text/css"
+  media="screen" />
+<title>{% block title %}GHeimdall2{% endblock %}</title>
+</head>
+{% block body %}<body>{% endblock %}
+  <div id="header"></div>
+  <div id="main_content">
+  {% if flash %}
+  <div id="status_block" class="flash">{{ flash }}</div>
+  {% endif %}
+  {% block content %}{% endblock %}
+  </div>
+  <div id="footer">{% block footer %}{% endblock %}</div>
+</body>
+</html>

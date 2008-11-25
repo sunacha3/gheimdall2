@@ -1,0 +1,15 @@
+# use glob syntax.
+syntax: glob
+
+*.elc
+*.pyc
+*~
+*.mo
+*.swp
+settings-local.py
+gheimdall2-local.conf
+
+syntax: regexp
+(.*/)?\#[^/]*\#$
+(.*/)?\.\#[^/]*$
+

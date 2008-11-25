@@ -1,0 +1,13 @@
+{% extends 'idp/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Your password has changed.' %}{% endblock %}
+{% block content %}
+<div id="formBox">
+
+ <h1>{% trans 'Your password has changed.' %}</h1>
+ <p>{{ user_name }}@{{ domain }}</p>
+ {% if backURL %}
+ <p><a href="{{ backURL }}">{% trans 'Back' %}</a></p>
+{% endif %}
+</div>
+{% endblock %}

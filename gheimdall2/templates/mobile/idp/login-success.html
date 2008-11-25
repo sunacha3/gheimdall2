@@ -1,0 +1,9 @@
+{% extends 'mobile/idp/base.html' %}
+{% load i18n %}
+{% block content %}
+  <form name="acsForm" action="{{ acsURL }}" method="post">
+    <input type="hidden" name="SAMLResponse" value="{{ SAMLResponse }}" />
+    <input type="hidden" name="RelayState" value="{{ RelayState }}" />
+    <input type="submit" value="{% trans 'continue logging in' %}"/>
+  </form>
+{% endblock %}

@@ -1,0 +1,134 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-11-24 23:33-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: idp/models.py:12 idp/models.py:28
+msgid "User Name:"
+msgstr ""
+
+#: idp/models.py:15
+msgid "Password:"
+msgstr ""
+
+#: idp/models.py:19
+msgid "Remember me on this computer:"
+msgstr ""
+
+#: idp/models.py:31
+msgid "Old password:"
+msgstr ""
+
+#: idp/models.py:35
+msgid "New password:"
+msgstr ""
+
+#: idp/models.py:38
+msgid "Confirm:"
+msgstr ""
+
+#: idp/models.py:47
+msgid "New password does not match"
+msgstr ""
+
+#: idp/views.py:71
+msgid "Can not login"
+msgstr ""
+
+#: idp/views.py:146
+msgid "Failed to change password"
+msgstr ""
+
+#: templates/404.html:4 templates/404.html.py:6
+msgid "Page not found"
+msgstr ""
+
+#: templates/404.html:8
+msgid "We're sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500.html:3
+msgid "Server error (500)"
+msgstr ""
+
+#: templates/500.html:5
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: templates/500.html:6
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: templates/idp/login-success.html:7 templates/idp/logout.html:8
+msgid "Please wait a second..."
+msgstr ""
+
+#: templates/idp/login-success.html:11 templates/idp/login.html:6
+#: templates/idp/login.html.py:11 templates/mobile/idp/login.html:4
+#: templates/mobile/idp/login.html.py:7
+msgid "Login"
+msgstr ""
+
+#: templates/idp/logout-success.html:3
+#: templates/mobile/idp/logout-success.html:3
+msgid "Logged out"
+msgstr ""
+
+#: templates/idp/logout-success.html:5
+#: templates/mobile/idp/logout-success.html:5
+msgid "You have successfully logged out."
+msgstr ""
+
+#: templates/idp/logout-success.html:6
+#: templates/mobile/idp/logout-success.html:6
+msgid "Login again"
+msgstr ""
+
+#: templates/idp/logout.html:3 templates/mobile/idp/logout.html:3
+msgid "Logging out..."
+msgstr ""
+
+#: templates/idp/logout.html:10
+msgid "logout"
+msgstr ""
+
+#: templates/idp/passwd-success.html:3 templates/idp/passwd-success.html:7
+#: templates/mobile/idp/passwd-success.html:3
+#: templates/mobile/idp/passwd-success.html:5
+msgid "Your password has changed."
+msgstr ""
+
+#: templates/idp/passwd-success.html:10 templates/idp/passwd.html:19
+#: templates/mobile/idp/passwd-success.html:8
+#: templates/mobile/idp/passwd.html:12
+msgid "Back"
+msgstr ""
+
+#: templates/idp/passwd.html:3 templates/idp/passwd.html.py:7
+#: templates/idp/passwd.html:13 templates/mobile/idp/passwd.html:3
+#: templates/mobile/idp/passwd.html.py:5 templates/mobile/idp/passwd.html:9
+msgid "Change password"
+msgstr ""
+
+#: templates/mobile/idp/login-success.html:7
+msgid "continue logging in"
+msgstr ""
+
+#: templates/mobile/idp/logout.html:6
+msgid "continue logging out"
+msgstr ""
