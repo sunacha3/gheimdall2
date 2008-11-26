@@ -1,0 +1,370 @@
+GHeimdall2 Manual
+
+Copyright (C) 2007 SIOS Technology, Inc.
+
+Author: Takashi Matsuo <tmatsuo@sios.com>
+
+Table of contents
+1. Overview
+1.1. What can GHeimdall2 do?
+1.2. Plug-in architecture
+1.3. Platform
+2. Install
+2.1. Dependencies
+2.2. Installation of gheimdall
+2.3. Preparation
+2.3.1. Enable SSO
+2.3.2. Creating a key pair
+2.4. Settings
+2.5. Apache settings
+2.5.1. Run gheimdall with mod_proxy
+2.5.2. Run gheimdall with mod_python
+2.6. PAM settings
+2.7. Prepare log directory
+2.8. Run GHeimdall
+2.9. Startup script
+3. Extend GHeimdall
+3.1. Common rule
+3.2. Create an authenticate module
+3.3. Create a change-passwords module
+3.4. Create a username mapper module
+
+
+1. Overview
+
+This program is a Django project for Google Apps SSO service. This
+program enables you to authenticate Google Apps users by your own
+authenticate back end. There is a functionality for changing users'
+passwords for an option.
+
+1.1. What can GHeimdall2 do?
+
+ 1.1.1. Things that GHeimdall can do.
+
+ Google Apps SSO authentication, changing users' passwords. (Users can
+ change passwords of both Google and your back end simultaneously.)
+ GHeimdall2 also has a capability for SLO service. Now GHeimdall2
+ supports only HTTP-POST binding for SLO service.
+
+ 1.1.2. Things which GHeimdall2 can not do.
+
+ To create and delete Google Apps account. To synchronize accounts
+ data between Google Apps and your back end.
+
+1.2. Plug-in architecture
+
+GHeimdall2 adopts a simple plug-in architecture. You can use plug-ins
+for at following functionalities. When plug-ins included in GHeimdall2
+can not satisfy your needs, you can develop your own plug-ins for your
+needs.
+
+ 1) Authentication
+
+    You can choose an authentication plug-in for your authentication
+    back end. GHeimdall2 initially includes both of PAM authentication
+    plug-in and LDAP authentication plug-in. GHeimdall2 also have an
+    functionality for HTTP header authentication. When you turned on
+    this functionality, GHeimdall2 will assume the value of specified
+    HTTP header as their user name. It is useful when users are
+    already authenticated by Apache's basic authentication, or by
+    their client certificate.
+
+ 2) User name mapping
+
+    If the user name which is used by your authenticate back end and
+    the user name of Google Apps differ, you can use some response
+    creator plug-in for transformation of the user name.
+
+ 3) Changing passwords
+
+    You can plug-in a functionality of changing users'
+    passwords. GHeimdall2 initially includes both of PAM and LDAP
+    changing-password plug-ins.
+
+1.3. Platform
+
+Now, I tested GHeimdall2 under CentOS5 and Debian/sid.
+
+2. Install
+
+2.1. Dependencies
+
+Following are set of software which must be installed for
+GHeimdall2. Please install these software.
+
+  1) Apache web server 
+  2) Django 1.0 or higher
+     http://www.djangoproject.com/
+  3) PyXMLSec
+     http://pyxmlsec.labs.libre-entreprise.org/ 
+  4) PyPAM (If you use PAM authentication)*1
+     http://www.pangalactic.org/PyPAM/
+  5) gdata-python-client 1.0.4 or higher
+     (If you want to change Google Apps password too)
+     http://code.google.com/p/gdata-python-client/
+  6) python-ldap (If you want to use ldap as your back end)
+     http://python-ldap.sourceforge.net/
+  7) python-saml2
+     http://code.google.com/p/python-saml2/
+
+*1 PyPAM-0.5.0 has a known problem. It sometimes dies for double
+   free. Now we are testing a patch. If you want to use this
+   experimental patch, please contact at Takashi Matsuo
+   <tmatsuo@sios.com>.
+
+2.2. Installation of GHeimdall2
+
+It is easy to install gheimdall2.
+
+$ tar xjvf gheimdall2-x.y.tar.bz2
+$ cd gheimdall2-x.y/gheimdall2
+$ python manage.py compilemessages
+$ cd ..
+$ python setup.py build
+$ sudo python setup.py install 
+
+2.3. Preparation
+
+ 2.3.1. Enable SSO
+
+ You have to enable SSO Service on Google Apps's web
+ console. Additionally, you must set some of following URLs on the
+ console. By default, following are the URLs for each functionalyty.
+
+  1. Login
+     http://your.domain.example.com/gheimdall2/login 
+  2. Logout
+     http://your.domain.example.com/gheimdall2/logout 
+  3. Change Passwords
+     http://your.domain.example.com/gheimdall2/passwd 
+
+ 2.3.2. Creating a key pair
+
+ You need to generate an rsa or dsa key pair for Google Apps SSO
+ Service. Here is an example which shows how to generate an rsa key
+ pair using openssl. (Yet lacking of attention in this example, you
+ should take care of the permission of generated private key.)
+
+# openssl genrsa -des3 -out privkey.pem 2048 
+# openssl rsa -in privkey.pem -out privkey-nopass.pem 
+# openssl rsa -in privkey-nopass.pem -pubout -outform DER -out publickey.der
+
+ You can use privkey-nopass.pem as private key, and publickey.der as
+ public key. Please upload the public key on Google Apps web console.
+
+2.4. Settings
+
+Let's glance through all settings of this program.
+
+apps_domain 
+  description: Set your Google Apps domain.
+  example: 'example.com' 
+
+privkey_filename 
+  description: Set fullpath of private key generated on instruction 2.3.2.
+  example: '/some/where/privkey-nopass.pem' 
+
+auth_engine 
+  description: Set module name for authentication.
+  example: 'pam' 
+
+pam_appname 
+  description: Set pam service name.
+  example: 'gheimdall' 
+
+uname_mapper 
+  description: Set module name for username mapper.
+  example: 'null' 
+
+use_change_passwd 
+  description: Set whether you want use change-passwords functionality.
+  example: True
+
+use_reset_passwd
+  description: Set whether you want use reset-passwords functionality.
+  example: False
+
+passwd_engine 
+  description: Set module name for change-passwords functionality.
+  example: 'pam' 
+
+passwd_regex 
+  description: Set regexp for password policy.
+  example: '^.{8,}$' 
+
+use_header_auth 
+  description: Set whether you want use HTTP header authentication.
+  example: False
+
+auth_header_key 
+  description: Set header name for HTTP header authentication.
+  example: 'SSL-CLIENT-S-DN-CN' 
+
+domain_admin 
+  description: Set user name of the administrator of Google Apps domain.
+  example: 'admin' 
+
+admin_passwd 
+  description: Set password of the administrator of Google Apps domain
+  example: 'password' 
+
+hash_function_name
+  description: Set it to 'SHA-1' if you want to send hashed passwords
+  to google.
+  example: 'SHA-1'
+
+ldap_uri 
+  description: Set the uri for ldap server.
+  example: 'ldap://ldap.example.com/' 
+
+ldap_basedn 
+  description: Set basedn for ldapsearch.
+  example: 'dn=example,dn=com' 
+
+ldap_filter 
+  description: Set format of the filter for ldapsearch. %s is replaced
+               with user name.
+  example: 'uid=%s' 
+
+ldap_rootdn
+  description: Set ldap's admin distinguished name.
+  example: 'cn=admin,dc=example,dc=com'
+
+ldap_rootpw
+  description: Set ldap's admin password.
+  example: 'password'
+
+ldap_passwd_hash_style
+  description: Set ldap password hash style.
+  example: '{SHA}'
+
+issuer_name
+  description: Set issuer name for IDP.
+  example: https://example.com/idp
+
+session_lifetime
+  description: How many seconds GHeimdall would keep users' login
+               sessions for.
+  example: 28800
+
+always_remember_me
+  description: Set to True when you don't want to use 'remember me on
+               this computer' checkbox. If set to True, GHeimdall
+               always remember user's login.
+  example: False
+
+privkey_type
+  description: Set rsa/dsa according to the type of the private key.
+  example: rsa
+
+default_response_creator
+  description: Set response creator classname. If you don't sure,
+               leave it 'default'.
+  example: default
+
+logout_request_urls
+  description: Set the dictionary which uses Service Provider's name
+               as its keys and the URLs of endpoints for logout
+               request as its values.
+  example: {"http://example.com/sp1": "http://example.com/sp1/logout"}
+
+logout_response_urls
+  description: Set the dictionary which uses Service Provider's name
+               as its keys and the URLs of endpoints for logout
+               response as its values.
+  example: {"http://example.com/sp1": "http://example.com/sp1/logout"}
+
+respones_creators
+  description: Set the dictionary which uses Service Provider's name
+               as its keys and response creator's classnames as its
+               values.
+  example: {"http://example.com/sp1": "custom"}
+
+public_keys
+  description: Set the dictionary which uses Service Provider's name
+               as its keys and Service Provider's public key filenames
+               as its values.
+  example: {"http://example.com/sp1": "/etc/gheimdall/sp1.pubkey"}
+
+use_reset_passwd
+  description: Set to True when you want to use 'Reset password'
+               feature. Don't forget to set appropriate permission for
+               this URL when you use this feature.
+  example: False
+
+2.5. Apache settings
+
+GHeimdall2 is designed to run behind apache with mod_python.
+
+ 2.5.1. Run GHeimdall2 with mod_python
+
+ First, copy docss/gheimdall2-modpython.sample to
+ /etc/httpd/conf.d/gheimdall2.conf or similar place.  Second, edit
+ configuration files and restart Apache.
+
+2.6. PAM settings
+
+If you use PAM authentication module, additionally you need configure
+PAM. Please copy docss/pam.sample to /etc/pam.d/gheimdall2, and edit
+it appropriately. And you need to configure PAM module too.
+
+2.7. Prepare directories
+
+By default, log directory is /var/log/gheimdall2, and session files
+are stored in /var/gheimdall2. Please make these directories, and
+configure permissions of these directories that GHeimdall2 running
+uid/gid can write in these direcotries. For example, if GHeimdall2 is
+running with mod_python, configure permissions for apache to write.
+
+3. Extend GHeimdall
+
+3.1. Common rule
+
+The class in the module which you write, always needs _prepare(self,
+config) method. This method receives config object as a parameter,
+save values for operation to instance variable of object itself. And
+you also need set the class itself to 'cls' variable in the global
+scope of this module.
+
+3.2. Create an authenticate module
+
+To create your own authenticate module, you have to create a module
+under gheimdall2/auth directory, and define a class extended from
+gheimdall2.auth.BaseAuthEngine inside the module. In this class, you
+have to implement _prepare(self, config) and _authenticate(self,
+user_name, password) instance methods. There is a sample module,
+gheimdall/auth/sample.py is for your reference.
+
+Following are the rules for each methods.
+
+ 1) _authenticate(self, user_name, password)
+
+    Return True if authentication succeed. Raise
+    gheimdall2.auth.AuthException when authentication failed.
+
+ 2) _postAuthHook(self, user_name, password)
+
+    This method is an option. If there is some operations after user
+    authenticated, please do the job in this method. If the job fails,
+    and you want this failure assumed to failure of authentication,
+    Raise gheimdall2.auth.AuthException.
+
+3.3. Create a change-passwords module
+
+To create your own change-passwords module, you have to create a
+module under gheimdall2/passwd directory, and define a class extended
+from passwd.BasePasswdEngine or passwd.BaseSyncPasswdEngine inside the
+module. BasePasswdEngine is for only changing passwords of your back
+end. BaseSyncPasswdEngine is for changing both of Google Apps password
+and your backend password simultaneously. In this class, you have to
+implement _prepare(self, config) and _changeLocalPassword(self,
+user_name, old_password, new_password) instance methods.
+
+Following are the rules for each methods.
+
+ 1) _changeLocalPassword(self, user_name, old_password, new_password)
+
+    Return True if changing password succeed. Raise
+    gheimdall2.passwd.PasswdException when failure.
+
+EOF

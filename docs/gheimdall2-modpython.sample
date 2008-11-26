@@ -1,0 +1,20 @@
+<Location "/gheimdall2/">
+    Order allow,deny
+    allow from all
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE gheimdall2.settings
+    PythonOption django.root /gheimdall2
+    PythonDebug On
+</Location>
+Alias /gheimdall2/static/ "/usr/lib/python2.4/site-packages/gheimdall2/static/"
+<Directory "/usr/lib/python2.4/site-packages/gheimdall2/static/">
+    Options Indexes MultiViews
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Location "/gheimdall2/static/">
+    SetHandler None
+</Location>

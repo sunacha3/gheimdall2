@@ -19,50 +19,50 @@
 
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
-from gheimdall2 import passwd
+from gheimdall import auth
 import PAM
-import re
 
 def pam_conv(auth, query_list):
+
   resp = []
-  regex = re.compile(".*new.+password.*", re.I)    
+    
   for i in range(len(query_list)):
     query, type = query_list[i]
-    if type == PAM.PAM_PROMPT_ECHO_ON or type == PAM.PAM_PROMPT_ECHO_OFF:
+    if type == PAM.PAM_PROMPT_ECHO_ON:
       data = auth.get_userdata()
-      if regex.match(query):
-        resp.append((data.get('new_password'), 0))
-      else:
-        resp.append((data.get('old_password'), 0))
+      resp.append((data.get('password'), 0))
+    elif type == PAM.PAM_PROMPT_ECHO_OFF:
+      data = auth.get_userdata()
+      resp.append((data.get('password'), 0))
     elif type == PAM.PAM_ERROR_MSG or type == PAM.PAM_TEXT_INFO:
       resp.append(('', 0));
     else:
       return None
   return resp
 
-class PamPasswdEngine(passwd.BaseSyncPasswdEngine):
-
-  def _changeLocalPassword(self, user_name, old_password, new_password):
-    pam = PAM.pam()
-    pam.start(self.appname)
-    pam.set_item(PAM.PAM_USER, user_name)
-    pam.set_item(PAM.PAM_CONV, pam_conv)
-    pam.set_userdata(dict(old_password=old_password,
-                          new_password=new_password))
-    try:
-      pam.chauthtok()
-    except PAM.error, args:
-      pam.close_session()
-      raise passwd.PasswdException(args[0])
-    except Exception, e:
-      pam.close_session()
-      raise passwd.PasswdException(e.__str__(), passwd.ERR_UNKNOWN)
-    else:
-      pam.close_session()
-      return True
+class PamAuthEngine(auth.BaseAuthEngine):
 
   def _prepare(self, config):
     # This is for standalone use.
     self.appname = config.get('pam_appname')
 
-cls = PamPasswdEngine
+  def _authenticate(self, user_name, password):
+    pam = PAM.pam()
+    pam.start(self.appname)
+    pam.set_item(PAM.PAM_USER, user_name)
+    pam.set_item(PAM.PAM_CONV, pam_conv)
+    pam.set_userdata(dict(password=password))
+    try:
+      pam.authenticate()
+      pam.acct_mgmt()
+    except PAM.error, args:
+      pam.close_session()
+      raise auth.AuthException(args[0], args[1])
+    except Exception, e:
+      pam.close_session()
+      raise auth.AuthException(auth.ERR_UNKNOWN, e.__str__())
+    else:
+      pam.close_session()
+      return True
+
+cls = PamAuthEngine
