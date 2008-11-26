@@ -67,7 +67,12 @@ def generate_random_password(length=8, alternate_hands=True):
 def is_user_authenticated(request):
   if request.session.get(const.REMEMBER_ME) and \
         request.session.get(const.AUTHENTICATED):
-    return True
+    auth_time = request.session.get(const.AUTH_TIME, 0)
+    valid_time = request.session.get(const.VALID_TIME, 0)
+    now = time.time()
+    if auth_time < now and now < valid_time:
+      return True
+  return False
 
 def get_template_list(request, path):
   if request.is_mobile:
@@ -131,8 +136,11 @@ def create_saml_response(request, authn_request, RelayState, user_name,
   if set_time:
     request.session[const.AUTH_TIME] = auth_time
     request.session[const.VALID_TIME] = valid_time  
-
-
+  try:
+    request.session[const.AUTHN_REQUEST] = None
+    request.session[const.RelayState] = None
+  except AttributeError:
+    pass
   if authn_request.protocol_binding == saml2.BINDING_HTTP_POST:
     signed_response = saml2.utils.sign(saml_response.ToString(),
                                        config.get('privkey_filename'))
