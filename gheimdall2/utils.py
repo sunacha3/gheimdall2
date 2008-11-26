@@ -119,7 +119,8 @@ def create_saml_response(request, authn_request, RelayState, user_name,
     request.session[const.AUTH_TIME] = auth_time
     request.session[const.VALID_TIME] = valid_time  
 
-
+  request.session[const.SAMLRequest] = None
+  request.session[const.RelayState] = None
   if authn_request.protocol_binding == saml2.BINDING_HTTP_POST:
     signed_response = saml2.utils.sign(saml_response.ToString(),
                                        config.get('privkey_filename'))

@@ -14,7 +14,7 @@ CONFFILE = 'gheimdall2.conf'
 
 #file_logger = logging.FileHandler("/var/log/gheimdall2/error.log")
 #file_logger.setLevel(logging.debug)
-#formatter = logging.Formatter('%(pathname)s: %(lineno)d %(name)-12s: %(levelname)-8s %(message)s')
+#formatter = logging.Formatter('%(pathname)s: %(lineno)d: %(name)s: %(levelname)s: %(message)s')
 #file_logger.setFormatter(formatter)
 #logging.getLogger('').addHandler(file_logger)
 
