@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-#   GHeimdall - A small web application for Google Apps SSO service.
+#   GHeimdall2 - A small web application for Google Apps SSO service.
 #   Copyright (C) 2007 SIOS Technology, Inc.
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
-from gheimdall import passwd
+from gheimdall2 import passwd
 import PAM
 import re
 
