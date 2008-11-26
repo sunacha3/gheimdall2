@@ -49,7 +49,12 @@ def generate_random_password(length=8, alternate_hands=True):
 def is_user_authenticated(request):
   if request.session.get(const.REMEMBER_ME) and \
         request.session.get(const.AUTHENTICATED):
-    return True
+    auth_time = request.session.get(const.AUTH_TIME, 0)
+    valid_time = request.session.get(const.VALID_TIME, 0)
+    now = time.time()
+    if auth_time < now and now < valid_time:
+      return True
+  return False
 
 def get_template_list(request, path):
   if request.is_mobile:
