@@ -126,7 +126,6 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
     self._prepare(config)
 
   def _login(self):
-
     try:
       email = self.domain_admin + '@' + self.domain
       self.apps_client = appsclient.getAppsClient(email, self.domain,
@@ -169,8 +168,7 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
       # TODO: modify self.domain, self.domain_admin, self.admin_passwd
       pass
     try:
-      if not self.ready:
-        self._login()
+      self._login()
       self._retrieveGoogleUser(user_name)
       if self.hash_function_name == 'SHA-1':
         sha_obj = sha.new(new_password)

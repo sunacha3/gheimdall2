@@ -84,8 +84,8 @@ def login_do(request):
     if e.code == auth.NEW_AUTHTOK_REQD:
       #TODO: lead user to password change page.
       pass
-    logging.error("Failed login attempt from %s. User: %s" %
-                  (request.META['REMOTE_ADDR'], user_name))
+    logging.error("Failed login attempt from %s. User: %s. Reason: %s" %
+                  (request.META['REMOTE_ADDR'], user_name, e.reason))
     time.sleep(config.get('sleep_time', 3))
     request.session[const.FLASH] = _('Can not login')
     redirect_url = reverse(login)
