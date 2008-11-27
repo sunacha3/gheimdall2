@@ -16,7 +16,7 @@
 
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from gheimdall2.conf import config
@@ -28,6 +28,8 @@ import logging, sys, time
 import urllib
 
 def static_login(request):
+  if not config.get("use_static_login"):
+    raise Http404
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
