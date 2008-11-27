@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GHeimdall2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-24 23:33-0600\n"
+"POT-Creation-Date: 2008-11-27 02:21-0600\n"
 "PO-Revision-Date: 2008-11-21 18:42+0900\n"
 "Last-Translator: Takashi Matsuo <tmatsuo@sios.com>\n"
 "Language-Team: psg-tech <psg-tech@sios.com>\n"
@@ -15,39 +15,43 @@ msgstr ""
 "Content-Transfer-Encoding: utf-8\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: idp/models.py:12 idp/models.py:28
+#: idp/models.py:30 idp/models.py:46
 msgid "User Name:"
 msgstr "ユーザー名:"
 
-#: idp/models.py:15
+#: idp/models.py:33
 msgid "Password:"
 msgstr "パスワード:"
 
-#: idp/models.py:19
+#: idp/models.py:37
 msgid "Remember me on this computer:"
 msgstr "次回は入力を省略:"
 
-#: idp/models.py:31
+#: idp/models.py:49
 msgid "Old password:"
 msgstr "今までのパスワード:"
 
-#: idp/models.py:35
+#: idp/models.py:53
 msgid "New password:"
 msgstr "新しいパスワード:"
 
-#: idp/models.py:38
+#: idp/models.py:56
 msgid "Confirm:"
 msgstr "もう一度: "
 
-#: idp/models.py:47
+#: idp/models.py:65
 msgid "New password does not match"
 msgstr "新しいパスワードが一致しません"
 
-#: idp/views.py:71
+#: idp/views.py:41 idp/views.py:130
 msgid "Can not login"
 msgstr "ログインできません"
 
-#: idp/views.py:146
+#: idp/views.py:62 idp/views.py:78 idp/views.py:116
+msgid "Invalid SAMLRequest"
+msgstr "SAMLRequestの値が不正です"
+
+#: idp/views.py:213
 msgid "Failed to change password"
 msgstr "パスワードの変更に失敗しました。"
 
@@ -74,6 +78,10 @@ msgid ""
 msgstr ""
 "エラーが発生しました。このエラーはサイト管理者に e-mail で通知されましたの"
 "で、すぐに修正されるでしょう。ご迷惑をおかけして済みません。"
+
+#: templates/idp/error.html:3 templates/mobile/idp/error.html:3
+msgid "An error occured."
+msgstr "エラーが発生しました。"
 
 #: templates/idp/login-success.html:7 templates/idp/logout.html:8
 msgid "Please wait a second..."
@@ -200,9 +208,6 @@ msgstr "ログアウトを続ける"
 
 #~ msgid "Your title goes here"
 #~ msgstr "タイトルが入ります"
-
-#~ msgid "Oops! An error occured"
-#~ msgstr "システムエラーが発生しました。\n"
 
 #~ msgid "-The Team"
 #~ msgstr "--システム管理チームより\n"

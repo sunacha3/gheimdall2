@@ -27,6 +27,44 @@ from saml2 import samlp
 import logging, sys, time
 import urllib
 
+def static_login(request):
+  user_name = request.POST.get('user_name')
+  password = request.POST.get('password')
+  auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
+  try:
+    auth_engine.authenticate(user_name, password)
+  except auth.AuthException, e:
+    logging.error("Failed login attempt from %s. User: %s. Reason: %s" %
+                  (request.META['REMOTE_ADDR'], user_name, e.reason))
+    time.sleep(config.get('sleep_time', 3))
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Can not login')})
+    return HttpResponse(t.render(c))
+  logging.debug('User has authenticated.')
+  import urllib
+  class MyURLopener(urllib.FancyURLopener):
+    version = '%s/%s' % (const.APP_NAME, const.VERSION)
+  urllib._urlopener = MyURLopener()
+  url = "https://mail.google.com/a/%s" % utils.get_domain(request)
+  redirected_url = urllib.urlopen(url).geturl()
+  import re
+  matched = re.match('^.*SAMLRequest=(.*)&RelayState=(.*)$', redirected_url)
+  SAMLRequest = urllib.unquote(matched.group(1))
+  RelayState = urllib.unquote(matched.group(2))
+  logging.debug("SAMLRequest: %s" % SAMLRequest)
+  logging.debug("RelayState: %s" % RelayState)
+  try:
+    (authn_request, RelayState) = utils.create_authn_request(
+      SAMLRequest, RelayState, samlp.AuthnRequestFromString)
+  except Exception, e:
+    logging.error(e)
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+    return HttpResponse(t.render(c))
+  response = utils.create_saml_response(request, authn_request, RelayState,
+                                        user_name)
+  return response
+
 def login(request):
   authn_request = request.session.get(const.AUTHN_REQUEST, None)
   RelayState = request.session.get(const.RELAY_STATE, None)
@@ -36,8 +74,9 @@ def login(request):
         request, samlp.AuthnRequestFromString)
     except Exception, e:
       logging.error(e)
-      # TODO: gently handle this situation.
-      raise
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+      return HttpResponse(t.render(c))
   if config.get('use_header_auth'):
     #TODO: implement header auth
     return HttpResponse('TODO: Dig in the header.')
@@ -72,9 +111,10 @@ def login_do(request):
       (authn_request, RelayState) = utils.parse_saml_request(
         request, samlp.AuthnRequestFromString)
     except Exception, e:
-      logging.debug(sys.exc_info())
-      # TODO: gently handle this situation.
-      raise
+      logging.error(e)
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+      return HttpResponse(t.render(c))
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)

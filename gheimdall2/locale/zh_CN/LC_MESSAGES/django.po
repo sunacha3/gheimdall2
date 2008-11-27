@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-24 23:33-0600\n"
+"POT-Creation-Date: 2008-11-27 02:21-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Yang Hsiaofeng <g-yo@sios.com>\n"
 "Language-Team: psg-tech <psg-tech@sios.com>\n"
@@ -15,39 +15,43 @@ msgstr ""
 "Content-Transfer-Encoding: utf-8\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: idp/models.py:12 idp/models.py:28
+#: idp/models.py:30 idp/models.py:46
 msgid "User Name:"
 msgstr "用户名:"
 
-#: idp/models.py:15
+#: idp/models.py:33
 msgid "Password:"
 msgstr "密码:"
 
-#: idp/models.py:19
+#: idp/models.py:37
 msgid "Remember me on this computer:"
 msgstr "记住我:"
 
-#: idp/models.py:31
+#: idp/models.py:49
 msgid "Old password:"
 msgstr "旧密码:"
 
-#: idp/models.py:35
+#: idp/models.py:53
 msgid "New password:"
 msgstr "新密码:"
 
-#: idp/models.py:38
+#: idp/models.py:56
 msgid "Confirm:"
 msgstr "确认: "
 
-#: idp/models.py:47
+#: idp/models.py:65
 msgid "New password does not match"
 msgstr "确认密码输入错误"
 
-#: idp/views.py:71
+#: idp/views.py:41 idp/views.py:130
 msgid "Can not login"
 msgstr "无法登陆。"
 
-#: idp/views.py:146
+#: idp/views.py:62 idp/views.py:78 idp/views.py:116
+msgid "Invalid SAMLRequest"
+msgstr ""
+
+#: idp/views.py:213
 msgid "Failed to change password"
 msgstr "变更密码失败"
 
@@ -72,6 +76,11 @@ msgid ""
 "There's been an error. It's been reported to the site administrators via e-"
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
+
+#: templates/idp/error.html:3 templates/mobile/idp/error.html:3
+#, fuzzy
+msgid "An error occured."
+msgstr "系统错误"
 
 #: templates/idp/login-success.html:7 templates/idp/logout.html:8
 msgid "Please wait a second..."
@@ -165,9 +174,6 @@ msgstr ""
 
 #~ msgid "Your title goes here"
 #~ msgstr "请在此处填写题目"
-
-#~ msgid "Oops! An error occured"
-#~ msgstr "系统错误"
 
 #~ msgid "-The Team"
 #~ msgstr "系统管理团队"

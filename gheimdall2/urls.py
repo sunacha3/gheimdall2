@@ -13,6 +13,7 @@ urlpatterns = patterns(
   #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
   # Uncomment the next line to enable the admin:
   #(r'^admin/(.*)', admin.site.root),
+  (r'^static_login$', 'gheimdall2.idp.views.static_login'),
   (r'^login$', 'gheimdall2.idp.views.login'),
   (r'^login.do$', 'gheimdall2.idp.views.login_do'),
   (r'^logout$', 'gheimdall2.idp.views.logout'),

@@ -160,13 +160,7 @@ def create_saml_response(request, authn_request, RelayState, user_name,
     raise NotImplementedError("Specified binding not supported. Binding: %s" %
                               authn_request.protocol_binding)
 
-def parse_saml_request(request, meth):
-  if request.method == "GET":
-    SAMLRequest = request.GET.get("SAMLRequest", None)
-    RelayState = request.GET.get("RelayState", None)
-  elif request.method == "POST":
-    SAMLRequest = request.POST.get("SAMLRequest", None)
-    RelayState = request.POST.get("RelayState", None)
+def create_authn_request(SAMLRequest, RelayState, meth):
   try:
     try:
       xml = zlib.decompress(b64decode(SAMLRequest), -8)
@@ -176,6 +170,15 @@ def parse_saml_request(request, meth):
     xml = b64decode(SAMLRequest)
   ret = meth(xml)
   return (ret, RelayState)
+
+def parse_saml_request(request, meth):
+  if request.method == "GET":
+    SAMLRequest = request.GET.get("SAMLRequest", None)
+    RelayState = request.GET.get("RelayState", None)
+  elif request.method == "POST":
+    SAMLRequest = request.POST.get("SAMLRequest", None)
+    RelayState = request.POST.get("RelayState", None)
+  return create_authn_request(SAMLRequest, RelayState, meth)
 
 def extract_logout_data(request):
   SAMLRequest = request.REQUEST.get("SAMLRequest", None)

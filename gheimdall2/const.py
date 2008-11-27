@@ -34,3 +34,6 @@ ISSUERS = 'issuers'
 USE_SSL = 'useSSL'
 ORIGINAL_ISSUER = 'original_issuer'
 LOGOUT_REQUEST_ID = 'logout_request_id'
+
+APP_NAME = 'GHeimdall'
+VERSION = '1.0'
