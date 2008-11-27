@@ -28,8 +28,12 @@ from gheimdall2 import responsecreator
 class DefaultResponseCreator(responsecreator.ResponseCreator):
 
   def _getNameID(self):
+    if self.user_name.find('@') >= 0:
+      user_name = self.user_name
+    else:
+      user_name = self.user_name+"@"+self.config.get("apps_domain")
     return saml.NameID(format=saml.NAMEID_FORMAT_EMAILADDRESS,
-                       text=self.user_name+"@"+self.config.get("apps_domain"))
+                       text=user_name)
 
   def _prepare(self, config):
     self.config = config

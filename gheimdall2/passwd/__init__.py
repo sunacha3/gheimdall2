@@ -133,7 +133,6 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
                                                   self.admin_passwd,
                                                   'gheimdall',
                                                   self.pickle_directory)
-      self.ready = True
     except Exception, e:
       logging.error(e)
       raise
@@ -145,15 +144,12 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
     raise NotImplementedError('Child class must implement me.')
 
   def _retrieveGoogleUser(self, user_name, num_tried=0):
-    if self.target_user is not None:
-      return True
-    
+
     if num_tried > self.max_trial:
       raise PasswdException('Can not retrieve user: %s.' % user_name,
                             ERR_FATAL)
     try:
-      if not self.ready:
-        self._login()
+      self._login()
       self.target_user = self.apps_client.RetrieveUser(user_name)
     except Exception, e:
       logging.debug(e.args)
@@ -166,7 +162,12 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
     return True
 
   def _changeGooglePassword(self, user_name, new_password):
-
+    if user_name.find('@') >= 0:
+      user_name = user_name[:user_name.find('@')]
+      # TODO: modify self.domain, self.domain_admin, self.admin_passwd
+    else:
+      # TODO: modify self.domain, self.domain_admin, self.admin_passwd
+      pass
     try:
       if not self.ready:
         self._login()

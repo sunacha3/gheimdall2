@@ -29,6 +29,7 @@ import gdata.apps.service
 import pickle
 import os
 import time
+import logging
 
 FILE = "apps_client_cpickle.data"
 EXPIRE = 86340 #23h50m
@@ -46,15 +47,21 @@ def getAppsClient(email, domain, password, source, dir):
   try:
     # First, aquire lock
     lockFile(lock_file)
+    client_dict = {}
     # Second, try to read from pickle file
     try:
       f = open(pickle_file, "rb")
-      (client, expire) = pickle.load(f)
-      f.close()
-      if expire < time.time():
+      client_dict = pickle.load(f)
+      if client_dict.has_key(domain):
+        (client, expire) = client_dict[domain]
+        if expire < time.time():
+          client = None
+      else:
         client = None
-    except Exception:
+      f.close()
+    except Exception, e:
       # ignore all exceptions
+      logging.error(e)
       pass
     # If client is invalid, create new one.
     if not isinstance(client, gdata.apps.service.AppsService):
@@ -63,10 +70,10 @@ def getAppsClient(email, domain, password, source, dir):
         source=source)
       client.ProgrammaticLogin()
       try:
-        import logging
         f = open(pickle_file, "wb")
         expire = time.time() + EXPIRE
-        pickle.dump((client, expire), f, True)
+        client_dict[domain] = (client, expire)
+        pickle.dump(client_dict, f, True)
         f.close()
       except (IOError, EOFError):
         # TODO: log error?

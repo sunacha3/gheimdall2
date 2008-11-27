@@ -91,6 +91,12 @@ def get_flash(request):
     pass
   return ret
 
+def get_domain(request):
+  user_name = request.session.get(const.USER_NAME)
+  if user_name and user_name.find('@') >= 0:
+    return user_name[user_name.find('@')+1:]
+  return config.get('apps_domain')
+
 def create_saml_response(request, authn_request, RelayState, user_name,
                          set_time=True):
   """ Returns HttpResponse object
@@ -180,7 +186,6 @@ def extract_logout_data(request):
 def clear_user_session(request):
   request.session[const.REMEMBER_ME] = False
   request.session[const.AUTHENTICATED] = False
-  request.session[const.USER_NAME] = None
   request.session[const.AUTH_TIME] = 0
   request.session[const.VALID_TIME] = 0
 
@@ -221,8 +226,8 @@ def handle_sp(request, RelayState):
           scheme = 'https'
         else:
           scheme = 'http'
-        url = scheme + '://mail.google.com/a/' + config.get('apps_domain') + \
-            '/?logout'
+        url = scheme + '://mail.google.com/a/' + get_domain(request) + \
+          '/?logout'
         t = gh_get_template(request, 'idp/logout.html')
         c = RequestContext(request, {"url": url})
         return HttpResponse(t.render(c))
@@ -244,7 +249,7 @@ def handle_sp(request, RelayState):
       scheme = 'https'
     else:
       scheme = 'http'
-    url = scheme + '://mail.google.com/a/' + config.get('apps_domain') + '/'
+    url = scheme + '://mail.google.com/a/' + get_domain(request) + '/'
     t = gh_get_template(request, 'idp/logout-success.html')
     c = RequestContext(request, {"url": url})
     return HttpResponse(t.render(c))

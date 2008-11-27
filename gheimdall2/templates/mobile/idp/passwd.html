@@ -3,7 +3,7 @@
 {% block title %}{% trans 'Change password' %}{% endblock %}
 {% block content %}
  <h1>{% trans 'Change password' %}</h1>
- <p>{{ user_name }}@{{ domain }}</p>
+ <p>{{ mail_address }}</p>
  <div><form action="passwd.do" method="post" name="passwd_form">
   {{ form.as_p }}
   <input type="submit" value="{% trans 'Change password' %}"/>

@@ -129,10 +129,13 @@ def password(request):
   
   passwd_form = PasswdForm(initial={"user_name": user_name, 
                                     "backURL": backURL})
+  if user_name.find('@') >= 0:
+    mail_address = user_name
+  else:
+    mail_address = user_name + '@' + config.get('apps_domain')
   t = utils.gh_get_template(request, 'idp/passwd.html')
-  c = RequestContext(request, {'user_name': user_name,
+  c = RequestContext(request, {'mail_address': mail_address,
                                'backURL': backURL,
-                               'domain': config.get('apps_domain'),
                                'form': passwd_form})
   return HttpResponse(t.render(c))
 
@@ -142,12 +145,16 @@ def passwd_do(request):
     # changing password is not available.
     raise errors.GHException('Changing password is not available here')
   passwd_form = PasswdForm(data=request.POST)
+  user_name = request.POST.get('user_name')
+  if user_name.find('@') >= 0:
+    mail_address = user_name
+  else:
+    mail_address = user_name + '@' + config.get('apps_domain')
   if not passwd_form.is_valid():
     t = utils.gh_get_template(request, 'idp/passwd.html')
     c = RequestContext(request, {
-        'user_name': request.POST.get('user_name'),
+        'mail_address': mail_address,
         'backURL': request.POST.get('backURL'),
-        'domain': config.get('apps_domain'),
         'form': passwd_form})
     return HttpResponse(t.render(c))
     
@@ -162,10 +169,9 @@ def passwd_do(request):
     #time.sleep(config.get('sleep_time', 3))
     t = utils.gh_get_template(request, 'idp/passwd.html')
     c = RequestContext(request, {
+        'mail_address': mail_address,
         'flash': _('Failed to change password'),
-        'user_name': passwd_form.cleaned_data.get('user_name'),
         'backURL': passwd_form.cleaned_data.get('backURL'),
-        'domain': config.get('apps_domain'),
         'form': passwd_form})
     return HttpResponse(t.render(c))
 
@@ -182,7 +188,6 @@ def passwd_do(request):
                                       user_name)
   t = utils.gh_get_template(request, 'idp/passwd-success.html')
   c = RequestContext(request, {
-      'user_name': passwd_form.cleaned_data.get('user_name'),
-      'backURL': passwd_form.cleaned_data.get('backURL'),
-      'domain': config.get('apps_domain')})
+      'mail_address': mail_address,
+      'backURL': passwd_form.cleaned_data.get('backURL')})
   return HttpResponse(t.render(c))
