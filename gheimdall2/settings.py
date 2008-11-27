@@ -31,10 +31,12 @@ EXTCONFDIR = os.path.join(CONFDIR, "conf.d")
 CONFFILE = 'gheimdall2.conf'
 
 #file_logger = logging.FileHandler("/var/log/gheimdall2/error.log")
-#file_logger.setLevel(logging.debug)
-#formatter = logging.Formatter('%(pathname)s: %(lineno)d: %(name)s: %(levelname)s: %(message)s')
+#file_logger.setLevel(logging.DEBUG)
+#formatter = logging.Formatter('%(asctime)s: %(pathname)s: %(lineno)d: %(name)s: %(levelname)s: %(message)s')
 #file_logger.setFormatter(formatter)
 #logging.getLogger('').addHandler(file_logger)
+#logging.getLogger().setLevel(logging.DEBUG)
+
 
 ADMINS = (
     ('admin', 'admin@example.com'),
