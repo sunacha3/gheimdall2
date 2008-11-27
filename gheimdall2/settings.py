@@ -126,3 +126,5 @@ INSTALLED_APPS = (
 
 STATIC_DOC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'static')
+SESSION_COOKIE_NAME = 'gh2sessionid'
+SESSION_COOKIE_SECURE = True
