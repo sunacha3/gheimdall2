@@ -21,6 +21,7 @@ from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from gheimdall2.conf import config
 from gheimdall2.idp.models import LoginForm, LoginFormWithCheckBox, PasswdForm
+from gheimdall2.idp.models import ResetForm
 from gheimdall2 import utils, settings, const, auth, errors, passwd
 from django.utils.translation import ugettext as _
 from saml2 import samlp
@@ -156,6 +157,8 @@ def logout(request):
   return utils.handle_sp(request, RelayState)
 
 def password(request):
+  if not config.get("use_change_passwd"):
+    raise Http404
   # first retrieve user_name from request
   user_name = request.REQUEST.get('user_name')
   if user_name is None:
@@ -164,10 +167,6 @@ def password(request):
     raise errors.GHException('Can not retrieve user name.')
   backURL = request.REQUEST.get('backURL')
   # TODO: sanitize user_name and backURL
-  if not config.get('use_change_passwd'):
-    # TODO: gently handle this situation
-    # changing password is not available.
-    raise errors.GHException('Changing password is not available here')
   
   passwd_form = PasswdForm(initial={"user_name": user_name, 
                                     "backURL": backURL})
@@ -182,10 +181,8 @@ def password(request):
   return HttpResponse(t.render(c))
 
 def passwd_do(request):
-  if not config.get('use_change_passwd'):
-    # TODO: gently handle this situation
-    # changing password is not available.
-    raise errors.GHException('Changing password is not available here')
+  if not config.get("use_change_passwd"):
+    raise Http404
   passwd_form = PasswdForm(data=request.POST)
   user_name = request.POST.get('user_name')
   if user_name.find('@') >= 0:
@@ -208,7 +205,8 @@ def passwd_do(request):
                                  passwd_form.cleaned_data.get('new_password'))
   except passwd.PasswdException, e:
     # changing password failed
-    #time.sleep(config.get('sleep_time', 3))
+    logging.error(e)
+    time.sleep(config.get('sleep_time', 3))
     t = utils.gh_get_template(request, 'idp/passwd.html')
     c = RequestContext(request, {
         'mail_address': mail_address,
@@ -224,8 +222,9 @@ def passwd_do(request):
         request, samlp.AuthnRequestFromString)
     except Exception, e:
       logging.error(e)
-      # TODO: gently handle this situation.
-      raise
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+      return HttpResponse(t.render(c))
     return utils.create_saml_response(request, authn_request, RelayState,
                                       user_name)
   t = utils.gh_get_template(request, 'idp/passwd-success.html')
@@ -233,3 +232,32 @@ def passwd_do(request):
       'mail_address': mail_address,
       'backURL': passwd_form.cleaned_data.get('backURL')})
   return HttpResponse(t.render(c))
+
+def reset_password(request):
+  if not config.get("use_reset_passwd"):
+    raise Http404
+  t = utils.gh_get_template(request, 'idp/reset-password.html')
+  c = RequestContext(request, {'form': ResetForm()})
+  return HttpResponse(t.render(c))
+
+def reset_password_do(request):
+  reset_form = ResetForm(request.POST)
+  if not reset_form.is_valid():
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Invalid username.')})
+    return HttpResponse(t.render(c))
+  try:
+    user_name = reset_form.cleaned_data.get('user_name')
+    passwd_engine = passwd.createPasswdEngine(
+      engine=config.get('passwd_engine'), config=config)
+    new_pass = passwd_engine.resetPassword(user_name)
+  except Exception, e:
+    logging.error(e)
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': e})
+    return HttpResponse(t.render(c))
+  t = utils.gh_get_template(request, 'idp/reset-password-success.html')
+  c = RequestContext(request, {'user_name': user_name,
+                               'new_pass': new_pass})
+  return HttpResponse(t.render(c))
+  

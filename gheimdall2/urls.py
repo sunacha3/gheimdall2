@@ -5,7 +5,7 @@ from django.conf import settings
 #admin.autodiscover()
 
 urlpatterns = patterns(
-  '',
+  'gheimdall2.idp.views',
   # Example:
   # (r'^gheimdall2/', include('gheimdall2.foo.urls')),
   # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
@@ -13,12 +13,14 @@ urlpatterns = patterns(
   #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
   # Uncomment the next line to enable the admin:
   #(r'^admin/(.*)', admin.site.root),
-  (r'^static_login$', 'gheimdall2.idp.views.static_login'),
-  (r'^login$', 'gheimdall2.idp.views.login'),
-  (r'^login.do$', 'gheimdall2.idp.views.login_do'),
-  (r'^logout$', 'gheimdall2.idp.views.logout'),
-  (r'^passwd$', 'gheimdall2.idp.views.password'),
-  (r'^passwd.do$', 'gheimdall2.idp.views.passwd_do'),
+  (r'^static_login$', 'static_login'),
+  (r'^login$', 'login'),
+  (r'^login.do$', 'login_do'),
+  (r'^logout$', 'logout'),
+  (r'^passwd$', 'password'),
+  (r'^passwd.do$', 'passwd_do'),
+  (r'^admin/reset_password$', 'reset_password'),
+  (r'^admin/reset_password.do$', 'reset_password_do'),
 )
 
 if settings.DEBUG:

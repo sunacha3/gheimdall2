@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-27 02:21-0600\n"
+"POT-Creation-Date: 2008-11-27 20:06-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,44 +16,48 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: idp/models.py:30 idp/models.py:46
+#: idp/models.py:28 idp/models.py:35 idp/models.py:51
 msgid "User Name:"
 msgstr ""
 
-#: idp/models.py:33
+#: idp/models.py:38
 msgid "Password:"
 msgstr ""
 
-#: idp/models.py:37
+#: idp/models.py:42
 msgid "Remember me on this computer:"
 msgstr ""
 
-#: idp/models.py:49
+#: idp/models.py:54
 msgid "Old password:"
 msgstr ""
 
-#: idp/models.py:53
+#: idp/models.py:58
 msgid "New password:"
 msgstr ""
 
-#: idp/models.py:56
+#: idp/models.py:61
 msgid "Confirm:"
 msgstr ""
 
-#: idp/models.py:65
+#: idp/models.py:70
 msgid "New password does not match"
 msgstr ""
 
-#: idp/views.py:41 idp/views.py:130
+#: idp/views.py:44 idp/views.py:133
 msgid "Can not login"
 msgstr ""
 
-#: idp/views.py:62 idp/views.py:78 idp/views.py:116
+#: idp/views.py:65 idp/views.py:81 idp/views.py:119 idp/views.py:226
 msgid "Invalid SAMLRequest"
 msgstr ""
 
 #: idp/views.py:213
 msgid "Failed to change password"
+msgstr ""
+
+#: idp/views.py:247
+msgid "Invalid username."
 msgstr ""
 
 #: templates/404.html:4 templates/404.html.py:6
@@ -131,6 +135,20 @@ msgstr ""
 #: templates/idp/passwd.html:13 templates/mobile/idp/passwd.html:3
 #: templates/mobile/idp/passwd.html.py:5 templates/mobile/idp/passwd.html:9
 msgid "Change password"
+msgstr ""
+
+#: templates/idp/reset-password-success.html:3
+#: templates/idp/reset-password-success.html:6
+#: templates/idp/reset-password.html:3 templates/idp/reset-password.html:6
+msgid "Reset User's password"
+msgstr ""
+
+#: templates/idp/reset-password-success.html:7
+msgid "Password was reset."
+msgstr ""
+
+#: templates/idp/reset-password.html:11
+msgid "Reset"
 msgstr ""
 
 #: templates/mobile/idp/login-success.html:7

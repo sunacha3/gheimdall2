@@ -23,6 +23,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.util import ErrorList
 
 # Create your models here.
+class ResetForm(forms.Form):
+  user_name = forms.CharField(
+    label=_('User Name:'), max_length=32, widget=forms.TextInput(
+      attrs={'size': config.get('user_name_field_length', 32)}))
+
 class LoginForm(forms.Form):
   SAMLRequest = forms.CharField(label='SAMLRequest', widget=forms.HiddenInput)
   RelayState = forms.CharField(label='RelayState', widget=forms.HiddenInput)
