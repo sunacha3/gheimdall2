@@ -20,7 +20,7 @@ import logging, sys
 import zlib, base64, sha
 import saml2
 import xmldsig as ds
-import time
+import time, random
 from saml2 import saml, samlp 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
