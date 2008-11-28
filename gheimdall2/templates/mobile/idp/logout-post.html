@@ -1,0 +1,10 @@
+{% extends 'mobile/idp/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Logging out...' %}{% endblock %}
+{% block content %}
+  <form name="logoutForm" action="{{ logout_url }}" method="post">
+    <input type="hidden" name="{{ param_name }}" value="{{ SAMLMessage }} "/>
+    <input type="hidden" name="RelayState" value="{{ RelayState  }}"/>
+    <input type="submit" value="{% trans 'continue logging out' %}"/>
+  </form>
+{% endblock %}

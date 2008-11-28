@@ -23,6 +23,7 @@ from gheimdall2.conf import config
 from gheimdall2.idp.models import LoginForm, LoginFormWithCheckBox, PasswdForm
 from gheimdall2.idp.models import ResetForm
 from gheimdall2 import utils, settings, const, auth, errors, passwd
+from gheimdall2.errors import GHException
 from django.utils.translation import ugettext as _
 from saml2 import samlp
 import logging, sys, time
@@ -74,17 +75,14 @@ def static_login(request):
   return response
 
 def login(request):
-  authn_request = request.session.get(const.AUTHN_REQUEST, None)
-  RelayState = request.session.get(const.RELAY_STATE, None)
-  if authn_request is None:
-    try:
-      (authn_request, RelayState) = utils.parse_saml_request(
-        request, samlp.AuthnRequestFromString)
-    except Exception, e:
-      logging.error(e)
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-      return HttpResponse(t.render(c))
+  try:
+    (authn_request, RelayState) = utils.parse_saml_request(
+      request, samlp.AuthnRequestFromString)
+  except Exception, e:
+    logging.error(e)
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+    return HttpResponse(t.render(c))
   if config.get('use_header_auth'):
     header_key = config.get('auth_header_key')
     if request.META.has_key(header_key):
@@ -103,16 +101,13 @@ def login(request):
   if authn_request.is_passive == 'true':
     #TODO: Passive!
     logging.warn('TODO: Correspond with passive authn_request.')
-  request.session[const.AUTHN_REQUEST] = authn_request
-  request.session[const.RELAY_STATE] = RelayState
   if config.get('always_remember_me'):
     login_form_cls = LoginForm
   else:
     login_form_cls = LoginFormWithCheckBox
   initial = {}
-  if request.device.is_docomo():
-    initial={'SAMLRequest': request.REQUEST.get("SAMLRequest"),
-             'RelayState': request.REQUEST.get("RelayState")}
+  initial={'SAMLRequest': request.REQUEST.get("SAMLRequest"),
+           'RelayState': request.REQUEST.get("RelayState")}
   login_form = login_form_cls(initial=initial)
   t = utils.gh_get_template(request, 'idp/login.html')
   c = RequestContext(request, {'form': login_form,
@@ -120,17 +115,14 @@ def login(request):
   return HttpResponse(t.render(c))
 
 def login_do(request):
-  authn_request = request.session.get(const.AUTHN_REQUEST, None)
-  RelayState = request.session.get(const.RELAY_STATE, None)
-  if authn_request is None:
-    try:
-      (authn_request, RelayState) = utils.parse_saml_request(
-        request, samlp.AuthnRequestFromString)
-    except Exception, e:
-      logging.error(e)
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-      return HttpResponse(t.render(c))
+  try:
+    (authn_request, RelayState) = utils.parse_saml_request(
+      request, samlp.AuthnRequestFromString)
+  except Exception, e:
+    logging.error(e)
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+    return HttpResponse(t.render(c))
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
@@ -145,10 +137,9 @@ def login_do(request):
     time.sleep(config.get('sleep_time', 3))
     request.session[const.FLASH] = _('Can not login')
     redirect_url = reverse(login)
-    if request.device.is_docomo():
-      SAMLRequest = request.POST.get("SAMLRequest", None)
-      redirect_url += '?' + urllib.urlencode({'SAMLRequest': SAMLRequest,
-                                              'RelayState': RelayState})
+    SAMLRequest = request.POST.get("SAMLRequest", None)
+    redirect_url += '?' + urllib.urlencode({'SAMLRequest': SAMLRequest,
+                                            'RelayState': RelayState})
     return HttpResponseRedirect(redirect_url)
   # User has authenticated
   response = utils.create_saml_response(request, authn_request, RelayState,
@@ -160,11 +151,35 @@ def logout(request):
     request.session[const.ISSUERS] = {}
   (SAMLRequest, SAMLResponse, RelayState) = utils.extract_logout_data(request)
   if SAMLRequest:
-    # TODO
-    raise NotImplementedError("Can not handle SAMLRequest for logout yet.")
+    try:
+      (logout_request, decoded) = utils.build_logout_message(
+        request, SAMLRequest, samlp.LogoutRequestFromString)
+    except Exception, e:
+      logging.error(e)
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
+      return HttpResponse(t.render(c))
+    issuer_name = logout_request.issuer.text.strip()
+    try:
+      utils.handle_logout_request(request, logout_request, decoded)
+    except GHException, e:
+      logging.error(e)
+      return utils.createLogoutResponse(request, RelayState, issuer_name,
+                                        logout_request.id,
+                                        samlp.STATUS_RESPONDER)
   elif SAMLResponse:
-    # TODO
-    raise NotImplementedError("Can not handle SAMLResponse for logout yet.")
+    try:
+      (logout_response, decoded) = utils.build_logout_message(
+        request, SAMLResponse, samlp.LogoutResponseFromString)
+    except Exception, e:
+      logging.error(e)
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Invalid SAMLResponse')})
+      return HttpResponse(t.render(c))
+    try:
+      utils.handle_logout_response(request, logout_response, decoded)
+    except GHException, e:
+      logging.error(e)
   else:
     utils.handle_logout_from_google(request)
   return utils.handle_sp(request, RelayState)

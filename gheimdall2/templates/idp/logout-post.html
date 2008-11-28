@@ -1,0 +1,14 @@
+{% extends 'idp/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Logging out...' %}{% endblock %}
+{% block body %}
+<body onload="javascript:document.logoutForm.submit()">
+{% endblock %}
+{% block content %}
+  <font size="+1">{% trans 'Please wait a second...' %}</font>
+  <form name="logoutForm" action="{{ logout_url }}" method="post">
+    <input type="hidden" name="{{ param_name }}" value="{{ SAMLMessage }} "/>
+    <input type="hidden" name="RelayState" value="{{ RelayState  }}"/>
+    <input type="submit" value="{% trans 'Logout' %}"/>
+  </form>
+{% endblock %}

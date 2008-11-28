@@ -21,13 +21,15 @@ import zlib, base64, sha
 import saml2
 import xmldsig as ds
 import time, random
-from saml2 import saml, samlp 
+from saml2 import saml, samlp
+from saml2 import utils as samlutils
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from gheimdall2 import const, sp, responsecreator, errors
 from gheimdall2.conf import config
+from gheimdall2.errors import GHException
 
 if sys.version_info < (2,4):
   b64decode = base64.decodestring
@@ -155,17 +157,14 @@ def create_saml_response(request, authn_request, RelayState, user_name,
     assertion_id=saml_response.assertion[0].id,
     name_id=saml_response.assertion[0].subject.name_id)
 
-  if RelayState.find('continue=https') >= 0:
+  if issuer.startswith('google.com') and RelayState is not None and \
+         RelayState.find('continue=https') >= 0:
     request.session[const.USE_SSL] = True
 
   if set_time:
     request.session[const.AUTH_TIME] = auth_time
     request.session[const.VALID_TIME] = valid_time  
-  try:
-    request.session[const.AUTHN_REQUEST] = None
-    request.session[const.RelayState] = None
-  except AttributeError:
-    pass
+
   if authn_request.protocol_binding == saml2.BINDING_HTTP_POST:
     signed_response = saml2.utils.sign(saml_response.ToString(),
                                        config.get('privkey_filename'))
@@ -259,12 +258,12 @@ def handle_sp(request, RelayState):
     elif issuer.status == sp.STATUS_LOGOUT_START or\
           issuer.status == sp.STATUS_LOGOUT_FAIL:
       any_failed = True
-    # send logout response to issuer_origin
-    request.session[const.ISSUERS] = {}
-    if any_failed:
-      status_to_send = samlp.STATUS_PARTIAL_LOGOUT
-    else:
-      status_to_send = samlp.STATUS_SUCCESS
+  # send logout response to issuer_origin
+  request.session[const.ISSUERS] = {}
+  if any_failed:
+    status_to_send = samlp.STATUS_PARTIAL_LOGOUT
+  else:
+    status_to_send = samlp.STATUS_SUCCESS
   if request.session[const.ORIGINAL_ISSUER].startswith("google.com"):
     useSSL = request.session.get(const.USE_SSL, False)
     if useSSL:
@@ -280,12 +279,90 @@ def handle_sp(request, RelayState):
       request, RelayState, request.session[const.ORIGINAL_ISSUER],
       request.session[const.LOGOUT_REQUEST_ID], status_to_send)
 
-def send_logout_request(RelayState, issuer_name, session_index, name_id):
-  raise NotImplementedError("TODO: implement me.")
+def send_logout_request(request, RelayState, issuer_name, session_index,
+                        name_id):
+  response_creator = responsecreator.create("default", config)
+  logout_request = response_creator.createLogoutRequest(session_index, name_id)
+  signed_request = saml2.utils.sign(logout_request.ToString(),
+                                    config.get('privkey_filename'))
+  logout_url = config.get("logout_request_urls").get(issuer_name)
+  t = gh_get_template(request, 'idp/logout-post.html')
+  c = RequestContext(request, {'param_name': 'SAMLRequest',
+                               'SAMLMessage': base64.b64encode(signed_request),
+                               'RelayState': RelayState,
+                               'logout_url': logout_url})
+  return HttpResponse(t.render(c))
 
-def send_logout_response(RelayState, issuer_name, req_id, status_code):
-  raise NotImplementedError("TODO: implement me.")
+def send_logout_response(request, RelayState, issuer_name, req_id,
+                         status_code):
+  response_creator = responsecreator.create("default", config)
+  logout_response = response_creator.createLogoutResponse(req_id, status_code)
+  signed_response = saml2.utils.sign(logout_response.ToString(),
+                                     config.get('privkey_filename'))
+  logout_url = config.get("logout_response_urls").get(issuer_name)
+  t = gh_get_template(request, 'idp/logout-post.html')
+  c = RequestContext(request,
+                     {'param_name': 'SAMLResponse',
+                      'SAMLMessage': base64.b64encode(signed_response),
+                      'RelayState': RelayState,
+                      "logout_url": logout_url})
+  return HttpResponse(t.render(c))
 
-def parse_saml_response(request, meth):
-  pass
+
+def build_logout_message(request, SAMLMessage, meth):
+  decoded_message = base64.b64decode(SAMLMessage)
+  logout_request = meth(decoded_message)
+  return (logout_request, decoded_message)
+
+def handle_logout_response(request, logout_response, decoded_response):
+
+  issuer_name = logout_response.issuer.text.strip()
+  key_file = config.get('public_keys').get(issuer_name, None)
+  if key_file is None:
+    raise GHException('Failed to get public key filename.'
+                      ' issuer: %s' % issuer_name)
+  if samlutils.verify(decoded_response, key_file) == False:
+    raise GHException('Failed verifyng the signature'
+                      ' of logout response.')
+  issuers = request.session.get(const.ISSUERS, {})
+  issuer_in_session = issuers.get(issuer_name, None)
+  if issuer_in_session is None:
+    raise GHException('Request from invalid issuer. Issuer: %s.' % issuer_name)
+  if issuer_in_session.status != sp.STATUS_LOGOUT_START:
+    raise GHException('Request from invalid issuer.')
+  if logout_response.status.status_code.value == samlp.STATUS_SUCCESS:
+    request.session[const.ISSUERS][issuer_name].status = \
+                                                       sp.STATUS_LOGOUT_SUCCESS
+  else:
+    request.session[const.ISSUERS][issuer_name].status = \
+                                                       sp.STATUS_LOGOUT_FAIL
+  request.session.modified = True
+  
+def handle_logout_request(request, logout_request, decoded_request):
+
+  issuer_name = logout_request.issuer.text.strip()
+  key_file = config.get('public_keys').get(issuer_name, None)
+  if key_file is None:
+    raise GHException('Failed to get public key filename.'
+                      ' issuer: %s' % issuer_name)
+  if samlutils.verify(decoded_request, key_file) == False:
+    raise GHException('Failed verifyng the signature'
+                      ' of logout request.')
+
+  issuers = request.session.get(const.ISSUERS, {})
+  issuer_in_session = issuers.get(issuer_name, None)
+  if issuer_in_session is None:
+    raise GHException('Request from invalid issuer. Issuer: %s.' % issuer_name)
+  if logout_request.name_id.text is None:
+    raise GHException('Request with empty NameID.')
+  if issuer_in_session.name_id.text.strip() != \
+         logout_request.name_id.text.strip():
+    raise GHException('Request with invalid NameID.')
+
+  logging.debug('Succeeded verifying the signature of logout request.')
+  issuer_in_session.status = sp.STATUS_LOGOUT_SUCCESS
+  request.session[const.ISSUERS][issuer_name] = issuer_in_session
+  clear_user_session(request)
+  request.session[const.ORIGINAL_ISSUER] = issuer_name
+  request.session[const.LOGOUT_REQUEST_ID] = logout_request.id            
   
