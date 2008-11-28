@@ -129,7 +129,8 @@ def create_saml_response(request, authn_request, RelayState, user_name,
   request.session[const.USER_NAME] = user_name
   request.session[const.AUTHENTICATED] = True
   if config.get('always_remember_me') or request.POST.get('remember_me'):
-    request.session[const.REMEMBER_ME] = True
+    if not config.get('use_header_auth'):
+      request.session[const.REMEMBER_ME] = True
 
   request.session[const.ISSUERS][issuer] = sp.ServiceProvider(
     name=issuer, status=sp.STATUS_LOGIN,

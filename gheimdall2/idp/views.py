@@ -81,8 +81,16 @@ def login(request):
       c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
       return HttpResponse(t.render(c))
   if config.get('use_header_auth'):
-    #TODO: implement header auth
-    return HttpResponse('TODO: Dig in the header.')
+    header_key = config.get('auth_header_key')
+    if request.META.has_key(header_key):
+      return utils.create_saml_response(request, authn_request, RelayState,
+                                        request.META[header_key])
+    else:
+      logging.error('use_header_auth is set to true,'
+                    ' but can not retrieve user_name from header.')
+      t = utils.gh_get_template(request, 'idp/error.html')
+      c = RequestContext(request, {'message': _('Can not retrieve user_name')})
+      return HttpResponse(t.render(c))
   if utils.is_user_authenticated(request):
     return utils.create_saml_response(request, authn_request, RelayState,
                                       request.session.get(const.USER_NAME),
