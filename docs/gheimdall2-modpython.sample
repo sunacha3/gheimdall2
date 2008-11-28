@@ -18,3 +18,9 @@ Alias /gheimdall2/static/ "/usr/lib/python2.4/site-packages/gheimdall2/static/"
 <Location "/gheimdall2/static/">
     SetHandler None
 </Location>
+
+<Location "/gheimdall2/admin/*">
+    Order deny,allow
+    deny from All
+    allow from 127.0.0.1
+</Location>
