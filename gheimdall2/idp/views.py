@@ -31,6 +31,10 @@ import urllib
 def static_login(request):
   if not config.get("use_static_login"):
     raise Http404
+  if request.device.is_docomo():
+    t = utils.gh_get_template(request, 'idp/error.html')
+    c = RequestContext(request, {'message': _('Unsupported cell phone.')})
+    return HttpResponse(t.render(c))
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
@@ -46,9 +50,10 @@ def static_login(request):
   logging.debug('User has authenticated.')
   import urllib
   class MyURLopener(urllib.FancyURLopener):
-    version = '%s/%s' % (const.APP_NAME, const.VERSION)
+    version = '%s (%s/%s)' % (request.META['HTTP_USER_AGENT'],
+                              const.APP_NAME, const.VERSION)
   urllib._urlopener = MyURLopener()
-  url = "https://mail.google.com/a/%s" % utils.get_domain(request)
+  url = utils.get_static_login_url(request)
   redirected_url = urllib.urlopen(url).geturl()
   import re
   matched = re.match('^.*SAMLRequest=(.*)&RelayState=(.*)$', redirected_url)

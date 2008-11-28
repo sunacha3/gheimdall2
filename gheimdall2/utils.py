@@ -97,6 +97,24 @@ def get_domain(request):
     return user_name[user_name.find('@')+1:]
   return config.get('apps_domain')
 
+def get_static_login_url(request):
+  service = request.POST.get('service', 'mail')
+  schema = request.POST.get('schema', 'https')
+  baseURL = request.POST.get('base_url')
+  if schema != 'http' and schema != 'https':
+    schema = 'https'
+  #if baseURL:
+  #  return baseURL
+  elif service == 'docs':
+    return '%s://docs.google.com/a/%s' % (schema, get_domain(request))
+  elif service == 'calendar':
+    return '%s://www.google.com/calendar/a/%s' % (schema, get_domain(request))
+  elif service == 'startpage':
+    logging.warn("service 'startpage' is not supported by static_login")
+  elif service == 'sites':
+    logging.warn("service 'sites' is not supported by static_login")
+  return '%s://mail.google.com/a/%s' % (schema, get_domain(request))
+
 def create_saml_response(request, authn_request, RelayState, user_name,
                          set_time=True):
   """ Returns HttpResponse object

@@ -59,6 +59,11 @@ class StandardExceptionMiddleware(object):
   def exception_email(self, request, exc_info):
     subject = 'Error (%s IP): %s' % ((request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS and 'internal' or 'EXTERNAL'), request.path)
     try:
+      post_copy = request.POST.copy()
+      for key in post_copy.keys():
+        if key.find('password') >= 0:
+          post_copy[key] = 'xxxxxxxx'
+      request.POST = post_copy
       request_repr = repr(request)
     except:
       request_repr = "Request repr() unavailable"
