@@ -4,7 +4,7 @@
 {% block content %}
  <h1>{% trans 'Change password' %}</h1>
  <p>{{ mail_address }}</p>
- <div><form action="passwd.do" method="post" name="passwd_form">
+ <div><form action="{% url passwd_do %}" method="post" name="passwd_form">
   {{ form.as_p }}
   <input type="submit" value="{% trans 'Change password' %}"/>
   </form>
