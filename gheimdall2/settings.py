@@ -21,6 +21,11 @@ __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 import logging
 import os
 
+# For plugins for gheimdall.
+import sys
+import gheimdall2
+sys.modules['gheimdall'] = sys.modules['gheimdall2']
+
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1')
@@ -126,5 +131,7 @@ INSTALLED_APPS = (
 
 STATIC_DOC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'static')
+
+#FORCE_SCRIPT_NAME = "/gheimdall2"
 SESSION_COOKIE_NAME = 'gh2sessionid'
 SESSION_COOKIE_SECURE = True
