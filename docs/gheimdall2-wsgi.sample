@@ -1,0 +1,22 @@
+WSGIScriptAlias /gheimdall2 /some/where/gheimdall2-wsgi.py
+<Directory /some/where>
+    Order deny,allow
+    Allow from all
+</Directory>
+Alias /gheimdall2/static/ "/usr/lib/python2.4/site-packages/gheimdall2/static/"
+<Directory "/usr/lib/python2.4/site-packages/gheimdall2/static/">
+    Options Indexes MultiViews
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Location "/gheimdall2/static/">
+    SetHandler None
+</Location>
+
+<Location "/gheimdall2/admin/*">
+    Order deny,allow
+    deny from All
+    allow from 127.0.0.1
+</Location>
