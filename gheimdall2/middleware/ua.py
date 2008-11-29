@@ -17,7 +17,6 @@
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
 import sys
-print sys.path
 from uamobile import detect, exceptions
 
 class UserAgentMobileMiddleware(object):
