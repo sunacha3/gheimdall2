@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-27 20:06-0600\n"
+"POT-Creation-Date: 2008-11-29 02:47-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Yang Hsiaofeng <g-yo@sios.com>\n"
 "Language-Team: psg-tech <psg-tech@sios.com>\n"
@@ -31,31 +31,48 @@ msgstr "记住我:"
 msgid "Old password:"
 msgstr "旧密码:"
 
-#: idp/models.py:58
+#: idp/models.py:57
+msgid "Input does not match our password policy"
+msgstr "不符合密码设置原则。"
+
+#: idp/models.py:59
 msgid "New password:"
 msgstr "新密码:"
 
-#: idp/models.py:61
+#: idp/models.py:62
 msgid "Confirm:"
 msgstr "确认: "
 
-#: idp/models.py:70
+#: idp/models.py:74
 msgid "New password does not match"
 msgstr "确认密码输入错误"
 
-#: idp/views.py:44 idp/views.py:133
+#: idp/views.py:37
+msgid "Unsupported cell phone."
+msgstr ""
+
+#: idp/views.py:49 idp/views.py:138
 msgid "Can not login"
 msgstr "无法登陆。"
 
-#: idp/views.py:65 idp/views.py:81 idp/views.py:119 idp/views.py:226
+#: idp/views.py:71 idp/views.py:84 idp/views.py:124 idp/views.py:160
+#: idp/views.py:254
 msgid "Invalid SAMLRequest"
 msgstr ""
 
-#: idp/views.py:213
+#: idp/views.py:95
+msgid "Can not retrieve user_name"
+msgstr ""
+
+#: idp/views.py:177
+msgid "Invalid SAMLResponse"
+msgstr ""
+
+#: idp/views.py:241
 msgid "Failed to change password"
 msgstr "变更密码失败"
 
-#: idp/views.py:247
+#: idp/views.py:275
 msgid "Invalid username."
 msgstr ""
 
@@ -86,7 +103,8 @@ msgstr ""
 msgid "An error occured."
 msgstr "系统错误"
 
-#: templates/idp/login-success.html:7 templates/idp/logout.html:8
+#: templates/idp/login-success.html:7 templates/idp/logout-post.html:8
+#: templates/idp/logout.html:8
 msgid "Please wait a second..."
 msgstr "请稍等"
 
@@ -95,6 +113,16 @@ msgstr "请稍等"
 #: templates/mobile/idp/login.html.py:7
 msgid "Login"
 msgstr "登陆"
+
+#: templates/idp/logout-post.html:3 templates/idp/logout.html:3
+#: templates/mobile/idp/logout-post.html:6 templates/mobile/idp/logout.html:6
+msgid "Logging out..."
+msgstr "正在退出系统..."
+
+#: templates/idp/logout-post.html:12
+#, fuzzy
+msgid "Logout"
+msgstr "退出系统"
 
 #: templates/idp/logout-success.html:3
 #: templates/mobile/idp/logout-success.html:3
@@ -110,10 +138,6 @@ msgstr ""
 #: templates/mobile/idp/logout-success.html:6
 msgid "Login again"
 msgstr "重新登陆"
-
-#: templates/idp/logout.html:3 templates/mobile/idp/logout.html:3
-msgid "Logging out..."
-msgstr "正在退出系统..."
 
 #: templates/idp/logout.html:10
 #, fuzzy
@@ -152,11 +176,11 @@ msgstr "密码已被更改。"
 msgid "Reset"
 msgstr "重置"
 
-#: templates/mobile/idp/login-success.html:7
+#: templates/mobile/idp/login-success.html:10
 msgid "continue logging in"
 msgstr ""
 
-#: templates/mobile/idp/logout.html:6
+#: templates/mobile/idp/logout-post.html:11 templates/mobile/idp/logout.html:9
 msgid "continue logging out"
 msgstr ""
 
@@ -218,9 +242,6 @@ msgstr ""
 
 #~ msgid "The value of SAMLRequest is wrong"
 #~ msgstr "SAMLRequest参数错误。"
-
-#~ msgid "Input does not match our password policy"
-#~ msgstr "不符合密码设置原则。"
 
 #~ msgid "Please enter a value"
 #~ msgstr "请输入    \n"

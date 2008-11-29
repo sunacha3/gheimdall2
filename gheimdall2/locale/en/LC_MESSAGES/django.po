@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-27 20:06-0600\n"
+"POT-Creation-Date: 2008-11-29 02:47-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,31 +32,48 @@ msgstr ""
 msgid "Old password:"
 msgstr ""
 
-#: idp/models.py:58
+#: idp/models.py:57
+msgid "Input does not match our password policy"
+msgstr ""
+
+#: idp/models.py:59
 msgid "New password:"
 msgstr ""
 
-#: idp/models.py:61
+#: idp/models.py:62
 msgid "Confirm:"
 msgstr ""
 
-#: idp/models.py:70
+#: idp/models.py:74
 msgid "New password does not match"
 msgstr ""
 
-#: idp/views.py:44 idp/views.py:133
+#: idp/views.py:37
+msgid "Unsupported cell phone."
+msgstr ""
+
+#: idp/views.py:49 idp/views.py:138
 msgid "Can not login"
 msgstr ""
 
-#: idp/views.py:65 idp/views.py:81 idp/views.py:119 idp/views.py:226
+#: idp/views.py:71 idp/views.py:84 idp/views.py:124 idp/views.py:160
+#: idp/views.py:254
 msgid "Invalid SAMLRequest"
 msgstr ""
 
-#: idp/views.py:213
+#: idp/views.py:95
+msgid "Can not retrieve user_name"
+msgstr ""
+
+#: idp/views.py:177
+msgid "Invalid SAMLResponse"
+msgstr ""
+
+#: idp/views.py:241
 msgid "Failed to change password"
 msgstr ""
 
-#: idp/views.py:247
+#: idp/views.py:275
 msgid "Invalid username."
 msgstr ""
 
@@ -86,7 +103,8 @@ msgstr ""
 msgid "An error occured."
 msgstr ""
 
-#: templates/idp/login-success.html:7 templates/idp/logout.html:8
+#: templates/idp/login-success.html:7 templates/idp/logout-post.html:8
+#: templates/idp/logout.html:8
 msgid "Please wait a second..."
 msgstr ""
 
@@ -94,6 +112,15 @@ msgstr ""
 #: templates/idp/login.html.py:11 templates/mobile/idp/login.html:4
 #: templates/mobile/idp/login.html.py:7
 msgid "Login"
+msgstr ""
+
+#: templates/idp/logout-post.html:3 templates/idp/logout.html:3
+#: templates/mobile/idp/logout-post.html:6 templates/mobile/idp/logout.html:6
+msgid "Logging out..."
+msgstr ""
+
+#: templates/idp/logout-post.html:12
+msgid "Logout"
 msgstr ""
 
 #: templates/idp/logout-success.html:3
@@ -109,10 +136,6 @@ msgstr ""
 #: templates/idp/logout-success.html:6
 #: templates/mobile/idp/logout-success.html:6
 msgid "Login again"
-msgstr ""
-
-#: templates/idp/logout.html:3 templates/mobile/idp/logout.html:3
-msgid "Logging out..."
 msgstr ""
 
 #: templates/idp/logout.html:10
@@ -151,10 +174,10 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: templates/mobile/idp/login-success.html:7
+#: templates/mobile/idp/login-success.html:10
 msgid "continue logging in"
 msgstr ""
 
-#: templates/mobile/idp/logout.html:6
+#: templates/mobile/idp/logout-post.html:11 templates/mobile/idp/logout.html:9
 msgid "continue logging out"
 msgstr ""

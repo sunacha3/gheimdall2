@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GHeimdall2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-27 20:06-0600\n"
-"PO-Revision-Date: 2008-11-28 11:08+0900\n"
+"POT-Creation-Date: 2008-11-29 02:47-0600\n"
+"PO-Revision-Date: 2008-11-29 17:49+0900\n"
 "Last-Translator: Takashi Matsuo <tmatsuo@sios.com>\n"
 "Language-Team: psg-tech <psg-tech@sios.com>\n"
 "MIME-Version: 1.0\n"
@@ -31,31 +31,48 @@ msgstr "次回は入力を省略:"
 msgid "Old password:"
 msgstr "今までのパスワード:"
 
-#: idp/models.py:58
+#: idp/models.py:57
+msgid "Input does not match our password policy"
+msgstr "パスワードポリシーに合致しません"
+
+#: idp/models.py:59
 msgid "New password:"
 msgstr "新しいパスワード:"
 
-#: idp/models.py:61
+#: idp/models.py:62
 msgid "Confirm:"
 msgstr "もう一度: "
 
-#: idp/models.py:70
+#: idp/models.py:74
 msgid "New password does not match"
 msgstr "新しいパスワードが一致しません"
 
-#: idp/views.py:44 idp/views.py:133
+#: idp/views.py:37
+msgid "Unsupported cell phone."
+msgstr "お使いの携帯端末はサポートされておりません。"
+
+#: idp/views.py:49 idp/views.py:138
 msgid "Can not login"
 msgstr "ログインできません"
 
-#: idp/views.py:65 idp/views.py:81 idp/views.py:119 idp/views.py:226
+#: idp/views.py:71 idp/views.py:84 idp/views.py:124 idp/views.py:160
+#: idp/views.py:254
 msgid "Invalid SAMLRequest"
 msgstr "SAMLRequestの値が不正です"
 
-#: idp/views.py:213
+#: idp/views.py:95
+msgid "Can not retrieve user_name"
+msgstr "ユーザー名が取得できません"
+
+#: idp/views.py:177
+msgid "Invalid SAMLResponse"
+msgstr "SAMLResponseの値が不正です"
+
+#: idp/views.py:241
 msgid "Failed to change password"
 msgstr "パスワードの変更に失敗しました。"
 
-#: idp/views.py:247
+#: idp/views.py:275
 msgid "Invalid username."
 msgstr "ユーザ名が不正です。"
 
@@ -87,7 +104,8 @@ msgstr ""
 msgid "An error occured."
 msgstr "エラーが発生しました。"
 
-#: templates/idp/login-success.html:7 templates/idp/logout.html:8
+#: templates/idp/login-success.html:7 templates/idp/logout-post.html:8
+#: templates/idp/logout.html:8
 msgid "Please wait a second..."
 msgstr "お待ちください...      "
 
@@ -96,6 +114,15 @@ msgstr "お待ちください...      "
 #: templates/mobile/idp/login.html.py:7
 msgid "Login"
 msgstr "ログイン"
+
+#: templates/idp/logout-post.html:3 templates/idp/logout.html:3
+#: templates/mobile/idp/logout-post.html:6 templates/mobile/idp/logout.html:6
+msgid "Logging out..."
+msgstr "ログアウトしています..."
+
+#: templates/idp/logout-post.html:12
+msgid "Logout"
+msgstr "ログアウト"
 
 #: templates/idp/logout-success.html:3
 #: templates/mobile/idp/logout-success.html:3
@@ -111,10 +138,6 @@ msgstr "ログアウトしました"
 #: templates/mobile/idp/logout-success.html:6
 msgid "Login again"
 msgstr "もう一度ログインする"
-
-#: templates/idp/logout.html:3 templates/mobile/idp/logout.html:3
-msgid "Logging out..."
-msgstr "ログアウトしています..."
 
 #: templates/idp/logout.html:10
 msgid "logout"
@@ -152,11 +175,11 @@ msgstr "パスワードはリセットされました。"
 msgid "Reset"
 msgstr "リセット"
 
-#: templates/mobile/idp/login-success.html:7
+#: templates/mobile/idp/login-success.html:10
 msgid "continue logging in"
 msgstr "ログインを続ける"
 
-#: templates/mobile/idp/logout.html:6
+#: templates/mobile/idp/logout-post.html:11 templates/mobile/idp/logout.html:9
 msgid "continue logging out"
 msgstr "ログアウトを続ける"
 
@@ -254,9 +277,6 @@ msgstr "ログアウトを続ける"
 
 #~ msgid "The value of SAMLRequest is wrong"
 #~ msgstr "SAMLRequest の値が不正です"
-
-#~ msgid "Input does not match our password policy"
-#~ msgstr "パスワードポリシーに合致しません"
 
 #~ msgid "Please enter a value"
 #~ msgstr "入力してください    \n"
