@@ -31,7 +31,7 @@ import os
 import time
 import logging
 
-FILE = "apps_client_cpickle.data"
+FILE = "apps_client_token_cpickle.data"
 EXPIRE = 86340 #23h50m
 DEADLOCK_TIMEOUT = 60
 
@@ -42,38 +42,49 @@ def getAppsClient(email, domain, password, source, dir):
 
   pickle_file = os.path.join(dir, FILE)
   lock_file = pickle_file + ".lock"
-  client = None
+  token = None
 
   try:
     # First, aquire lock
     lockFile(lock_file)
-    client_dict = {}
+    token_dict = {}
     # Second, try to read from pickle file
     try:
       f = open(pickle_file, "rb")
-      client_dict = pickle.load(f)
-      if client_dict.has_key(domain):
-        (client, expire) = client_dict[domain]
+      token_dict = pickle.load(f)
+      if token_dict.has_key(domain):
+        (token, expire) = token_dict[domain]
         if expire < time.time():
-          client = None
+          token = None
       else:
-        client = None
+        token = None
       f.close()
     except Exception, e:
       # ignore all exceptions
       logging.error(e)
       pass
-    # If client is invalid, create new one.
-    if not isinstance(client, gdata.apps.service.AppsService):
-      client = gdata.apps.service.AppsService(
-        email=email, domain=domain, password=password,
-        source=source)
+    client = gdata.apps.service.AppsService(
+      email=email, domain=domain, password=password,
+      source=source)
+    if token:
+      try:
+        client.SetClientLoginToken(token)
+      except AttirbuteError:
+        client.auth_token = token
+      logging.debug('An auth token re-used.')
+    else:
       client.ProgrammaticLogin()
       try:
+        token = client.GetClientLoginToken()
+      except AttributeError:
+        token = client.auth_token
+      try:
+        logging.debug('Writing token to file.')
         f = open(pickle_file, "wb")
+        os.chmod(pickle_file, 0600)
         expire = time.time() + EXPIRE
-        client_dict[domain] = (client, expire)
-        pickle.dump(client_dict, f, True)
+        token_dict[domain] = (token, expire)
+        pickle.dump(token_dict, f, True)
         f.close()
       except (IOError, EOFError):
         # TODO: log error?
