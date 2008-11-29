@@ -54,6 +54,7 @@ class PasswdForm(forms.Form):
     label=_('Old password:'), max_length=16, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
   new_password = forms.RegexField(
+    error_messages={'invalid': _('Input does not match our password policy')},
     regex=config.get('passwd_regex'),
     label=_('New password:'), max_length=16, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
@@ -63,6 +64,9 @@ class PasswdForm(forms.Form):
   def clean(self):
     cleaned_data = self.cleaned_data
     new_password = cleaned_data.get('new_password')
+    if new_password is None:
+      # It must be that regex check didn't pass.
+      return cleaned_data
     password_confirm = cleaned_data.get('password_confirm')
     if new_password != password_confirm:
       #raise forms.ValidationError(_('New password does not match'))
