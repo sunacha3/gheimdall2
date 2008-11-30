@@ -58,7 +58,8 @@ def main():
   newconf_file = sys.argv[2]
   old_config = ConfigObj(oldconf_file, unrepr=True, interpolation=False)
   new_config = ConfigObj(conf_file, unrepr=True)
-  old_config['global'].walk(my_walk, call_on_sections=True, new_config=new_config)
+  old_config['global'].walk(my_walk, call_on_sections=True,
+                            new_config=new_config)
   f = file(newconf_file, 'w')
   new_config.write(f)
   f.close()
