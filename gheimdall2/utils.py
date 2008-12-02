@@ -117,6 +117,14 @@ def get_static_login_url(request):
     logging.warn("service 'sites' is not supported by static_login")
   return '%s://mail.google.com/a/%s' % (schema, get_domain(request))
 
+def init_session(request, user_name):
+  request.session.flush()
+  request.session[const.USER_NAME] = user_name
+  request.session[const.AUTHENTICATED] = True
+  if config.get('always_remember_me') or request.POST.get('remember_me'):
+    if not config.get('use_header_auth'):
+      request.session[const.REMEMBER_ME] = True
+
 def create_saml_response(request, authn_request, RelayState, user_name,
                          set_time=True):
   """ Returns HttpResponse object
@@ -142,15 +150,8 @@ def create_saml_response(request, authn_request, RelayState, user_name,
                                                        valid_time,
                                                        auth_time,
                                                        acsURL)
-  # Preserve user_name in the session for changing password.
   if request.session.get(const.ISSUERS, None) is None:
-    request.session.flush()
     request.session[const.ISSUERS] = {}
-  request.session[const.USER_NAME] = user_name
-  request.session[const.AUTHENTICATED] = True
-  if config.get('always_remember_me') or request.POST.get('remember_me'):
-    if not config.get('use_header_auth'):
-      request.session[const.REMEMBER_ME] = True
 
   request.session[const.ISSUERS][issuer] = sp.ServiceProvider(
     name=issuer, status=sp.STATUS_LOGIN,

@@ -49,6 +49,7 @@ def static_login(request):
     c = RequestContext(request, {'message': _('Can not login')})
     return HttpResponse(t.render(c))
   logging.debug('User has authenticated.')
+  utils.init_session(request, user_name)
   import urllib
   class MyURLopener(urllib.FancyURLopener):
     version = '%s (%s/%s)' % (request.META['HTTP_USER_AGENT'],
@@ -130,8 +131,8 @@ def login_do(request):
     auth_engine.authenticate(user_name, password)
   except auth.AuthException, e:
     if e.code == auth.NEW_AUTHTOK_REQD:
-      #TODO: lead user to password change page.
-      pass
+      logging.warn('TODO: lead user to password change page.')
+      request.session.flush()
     logging.error("Failed login attempt from %s. User: %s. Reason: %s" %
                   (request.META['REMOTE_ADDR'], user_name, e.reason))
     time.sleep(config.get('sleep_time', 3))
@@ -142,6 +143,7 @@ def login_do(request):
                                             'RelayState': RelayState})
     return HttpResponseRedirect(redirect_url)
   # User has authenticated
+  utils.init_session(request, user_name)
   response = utils.create_saml_response(request, authn_request, RelayState,
                                         user_name)
   return response
