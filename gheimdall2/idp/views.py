@@ -46,8 +46,8 @@ def static_login(request):
                   (request.META['REMOTE_ADDR'], user_name, e.reason))
     time.sleep(config.get('sleep_time', 3))
     t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Can not login')})
-    return HttpResponse(t.render(c))
+    c = RequestContext(request, {'message': '401 - ' + _('Can not login')})
+    return HttpResponse(t.render(c), status=401)
   logging.debug('User has authenticated.')
   utils.init_session(request, user_name)
   import urllib
