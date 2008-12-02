@@ -133,8 +133,9 @@ def create_saml_response(request, authn_request, RelayState, user_name,
   acsURL = authn_request.assertion_consumer_service_url
   issuer = authn_request.issuer.text.strip()
   creators = config.get('response_creators', dict())
-  module_name = creators.get(
-    issuer, config.get("default_response_creator","default"))
+  module_name = creators.get(issuer)
+  if module_name is None:
+    module_name = config.get("default_response_creator","default")
   response_creator = responsecreator.create(module_name, config)
 
   if set_time:
