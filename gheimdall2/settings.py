@@ -83,7 +83,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/')
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 if DEBUG:
-  MEDIA_URL = 'http://wikid.shehas.net/static/'
+  MEDIA_URL = '/gheimdall2/static/'
 else:
   MEDIA_URL = '/gheimdall2/static/'
 
