@@ -23,7 +23,9 @@ from gheimdall2.conf.configobj import ConfigObj
 _config = ConfigObj(os.path.join(settings.CONFDIR, settings.CONFFILE),
                     unrepr=True)
 for file in os.listdir(settings.EXTCONFDIR):
-  _config.merge(ConfigObj(os.path.join(settings.EXTCONFDIR, file),unrepr=True))
+  if file.endswith('.conf'):
+    _config.merge(ConfigObj(os.path.join(settings.EXTCONFDIR, file),
+                            unrepr=True))
 
 compat_dict = {
   'idp_session_lifetime': 'session_lifetime',
