@@ -59,11 +59,11 @@ def static_login(request):
   redirected_url = urllib.urlopen(url).geturl()
   import re
   matched = re.match('^.*SAMLRequest=(.*)&RelayState=(.*)$', redirected_url)
-  SAMLRequest = urllib.unquote(matched.group(1))
-  RelayState = urllib.unquote(matched.group(2))
-  logging.debug("SAMLRequest: %s" % SAMLRequest)
-  logging.debug("RelayState: %s" % RelayState)
   try:
+    SAMLRequest = urllib.unquote(matched.group(1))
+    RelayState = urllib.unquote(matched.group(2))
+    logging.debug("SAMLRequest: %s" % SAMLRequest)
+    logging.debug("RelayState: %s" % RelayState)
     (authn_request, RelayState) = utils.create_authn_request(
       SAMLRequest, RelayState, samlp.AuthnRequestFromString)
   except Exception, e:
