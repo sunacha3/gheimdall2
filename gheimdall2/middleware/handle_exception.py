@@ -70,11 +70,26 @@ class StandardExceptionMiddleware(object):
     message = "%s\n\n%s" % (_get_traceback(exc_info), request_repr)
     return subject, message
 
+  def log_critical(self, request, exc_info):
+    try:
+      post_copy = request.POST.copy()
+      for key in post_copy.keys():
+        if key.find('password') >= 0:
+          post_copy[key] = 'xxxxxxxx'
+      request.POST = post_copy
+      request_repr = repr(request)
+    except:
+      request_repr = "Request repr() unavailable"
+    message = "%s\n\n%s" % (_get_traceback(exc_info), request_repr)
+    import logging
+    logging.critical(message)
 
   def log_exception(self, request, exception, exc_info):
-    subject, message = self.exception_email(request, exc_info)
-    mail_admins(subject, message, fail_silently=True)
-
+    if settings.LOG_CRITICAL_TO_FILE:
+      self.log_critical(request, exc_info)
+    else:
+      subject, message = self.exception_email(request, exc_info)
+      mail_admins(subject, message, fail_silently=True)
 
 
 def _get_traceback(self, exc_info=None):

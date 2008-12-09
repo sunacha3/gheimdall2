@@ -134,3 +134,5 @@ STATIC_DOC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 #FORCE_SCRIPT_NAME = "/gheimdall2"
 SESSION_COOKIE_NAME = 'gh2sessionid'
 SESSION_COOKIE_SECURE = True
+
+LOG_CRITICAL_TO_FILE = True
