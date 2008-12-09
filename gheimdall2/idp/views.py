@@ -29,13 +29,17 @@ from saml2 import samlp
 import logging, sys, time
 import urllib
 
+def render_error(request, message, status=500):
+  t = utils.gh_get_template(request, 'idp/error.html')
+  c = RequestContext(request, {'message': message})
+  return HttpResponse(t.render(c), status=status)
+  
 def static_login(request):
   if not config.get("use_static_login"):
     raise Http404
   if request.device.is_docomo():
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Unsupported cell phone.')})
-    return HttpResponse(t.render(c))
+    return render_error(request, _('Unsupported cell phone.'),
+                        status=501)
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
@@ -45,9 +49,7 @@ def static_login(request):
     logging.error("Failed login attempt from %s. User: %s. Reason: %s" %
                   (request.META['REMOTE_ADDR'], user_name, e.reason))
     time.sleep(config.get('sleep_time', 3))
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': '401 - ' + _('Can not login')})
-    return HttpResponse(t.render(c), status=401)
+    return render_error(request, _('Can not login'), status=401)
   logging.debug('User has authenticated.')
   utils.init_session(request, user_name)
   import urllib
@@ -68,9 +70,7 @@ def static_login(request):
       SAMLRequest, RelayState, samlp.AuthnRequestFromString)
   except Exception, e:
     logging.error(e)
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-    return HttpResponse(t.render(c))
+    return render_error(request, _('Invalid SAMLRequest'), status=500)
   response = utils.create_saml_response(request, authn_request, RelayState,
                                         user_name)
   return response
@@ -81,9 +81,7 @@ def login(request):
       request, samlp.AuthnRequestFromString)
   except Exception, e:
     logging.error(e)
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-    return HttpResponse(t.render(c))
+    return render_error(request, _('Invalid SAMLRequest'), status=400)
   if config.get('use_header_auth'):
     header_key = config.get('auth_header_key')
     if request.META.has_key(header_key):
@@ -92,9 +90,7 @@ def login(request):
     else:
       logging.error('use_header_auth is set to true,'
                     ' but can not retrieve user_name from header.')
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Can not retrieve user_name')})
-      return HttpResponse(t.render(c))
+      return render_error(request, _('Can not retrieve user_name'), status=400)
   if utils.is_user_authenticated(request):
     return utils.create_saml_response(request, authn_request, RelayState,
                                       request.session.get(const.USER_NAME),
@@ -121,9 +117,7 @@ def login_do(request):
       request, samlp.AuthnRequestFromString)
   except Exception, e:
     logging.error(e)
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-    return HttpResponse(t.render(c))
+    return render_error(request, _('Invalid SAMLRequest'), status=400)
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
@@ -158,9 +152,7 @@ def logout(request):
         request, SAMLRequest, samlp.LogoutRequestFromString)
     except Exception, e:
       logging.error(e)
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-      return HttpResponse(t.render(c))
+      return render_error(request, _('Invalid SAMLRequest'), status=400)
     issuer_name = logout_request.issuer.text.strip()
     try:
       utils.handle_logout_request(request, logout_request, decoded)
@@ -175,9 +167,7 @@ def logout(request):
         request, SAMLResponse, samlp.LogoutResponseFromString)
     except Exception, e:
       logging.error(e)
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Invalid SAMLResponse')})
-      return HttpResponse(t.render(c))
+      return render_error(request, _('Invalid SAMLResponse'), status=400)
     try:
       utils.handle_logout_response(request, logout_response, decoded)
     except GHException, e:
@@ -194,7 +184,7 @@ def password(request):
   if user_name is None:
     user_name = request.session.get(const.USER_NAME)
   if user_name is None:
-    raise errors.GHException('Can not retrieve user name.')
+    return render_error(request, _('Can not retrieve user name.'), status=400)
   backURL = request.REQUEST.get('backURL')
   # TODO: sanitize user_name and backURL
   
@@ -252,9 +242,7 @@ def passwd_do(request):
         request, samlp.AuthnRequestFromString)
     except Exception, e:
       logging.error(e)
-      t = utils.gh_get_template(request, 'idp/error.html')
-      c = RequestContext(request, {'message': _('Invalid SAMLRequest')})
-      return HttpResponse(t.render(c))
+      return render_error(request, _('Invalid SAMLRequest'), status=400)
     return utils.create_saml_response(request, authn_request, RelayState,
                                       user_name)
   t = utils.gh_get_template(request, 'idp/passwd-success.html')
@@ -273,9 +261,7 @@ def reset_password(request):
 def reset_password_do(request):
   reset_form = ResetForm(request.POST)
   if not reset_form.is_valid():
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': _('Invalid username.')})
-    return HttpResponse(t.render(c))
+    return render_error(request, _('Invalid username.'), status=400)
   try:
     user_name = reset_form.cleaned_data.get('user_name')
     passwd_engine = passwd.createPasswdEngine(
@@ -283,9 +269,7 @@ def reset_password_do(request):
     new_pass = passwd_engine.resetPassword(user_name)
   except Exception, e:
     logging.error(e)
-    t = utils.gh_get_template(request, 'idp/error.html')
-    c = RequestContext(request, {'message': e})
-    return HttpResponse(t.render(c))
+    return render_error(request, e, status=500)
   t = utils.gh_get_template(request, 'idp/reset-password-success.html')
   c = RequestContext(request, {'user_name': user_name,
                                'new_pass': new_pass})
