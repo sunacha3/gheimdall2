@@ -134,5 +134,7 @@ STATIC_DOC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 #FORCE_SCRIPT_NAME = "/gheimdall2"
 SESSION_COOKIE_NAME = 'gh2sessionid'
 SESSION_COOKIE_SECURE = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+SESSION_FILE_PATH = '/var/gheimdall2/session'
 
 LOG_CRITICAL_TO_FILE = True
