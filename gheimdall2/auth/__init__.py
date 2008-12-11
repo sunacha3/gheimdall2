@@ -36,7 +36,7 @@ class BaseAuthEngine(object):
   def __init__(self, config):
     self._prepare(config)
 
-  def authenticate(self, user_name, password):
+  def authenticate(self, user_name, password, request):
     ret = self._authenticate(user_name, password)
     if ret:
       self._postAuthHook(user_name, password)
@@ -52,6 +52,15 @@ class BaseAuthEngine(object):
     pass
 
   def _prepare(self, config):
+    raise NotImplementedError('Child class must implement me.')
+
+class RequestAuthEngine(BaseAuthEngine):
+  def authenticate(self, user_name, password, request):
+    ret = self._authenticateWithRequest(user_name, password, request)
+    if ret:
+      self._postAuthHook(user_name, password)
+    return ret
+  def _authenticateWithRequest(self, user_name, password, request):
     raise NotImplementedError('Child class must implement me.')
 
 cached_engine = None

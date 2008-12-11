@@ -44,7 +44,7 @@ def static_login(request):
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
   try:
-    auth_engine.authenticate(user_name, password)
+    auth_engine.authenticate(user_name, password, request)
   except auth.AuthException, e:
     logging.error("Failed login attempt from %s. User: %s. Reason: %s" %
                   (request.META['REMOTE_ADDR'], user_name, e.reason))
@@ -122,7 +122,7 @@ def login_do(request):
   password = request.POST.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
   try:
-    auth_engine.authenticate(user_name, password)
+    auth_engine.authenticate(user_name, password, request)
   except auth.AuthException, e:
     if e.code == auth.NEW_AUTHTOK_REQD:
       logging.warn('TODO: lead user to password change page.')
