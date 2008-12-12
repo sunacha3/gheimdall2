@@ -23,8 +23,11 @@ import os
 
 # For plugins for gheimdall.
 import sys
-import gheimdall2
-sys.modules['gheimdall'] = sys.modules['gheimdall2']
+try:
+  import gheimdall2
+  sys.modules['gheimdall'] = sys.modules['gheimdall2']
+except:
+  pass
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
