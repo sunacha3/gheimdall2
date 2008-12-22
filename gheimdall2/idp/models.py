@@ -21,6 +21,7 @@ from django import forms
 from gheimdall2.conf import config
 from django.utils.translation import ugettext_lazy as _
 from django.forms.util import ErrorList
+import logging
 
 # Create your models here.
 class ResetForm(forms.Form):
@@ -72,4 +73,11 @@ class PasswdForm(forms.Form):
       #raise forms.ValidationError(_('New password does not match'))
       self._errors['password_confirm'] = ErrorList(
         [_('New password does not match')])
+    if config.get('password_cannot_contain_username', False):
+      import re
+      user_name = cleaned_data.get('user_name')
+      if re.compile(user_name, re.I).search(new_password):
+        logging.warn('New password contains username, rejected.')
+        self._errors['new_password'] = ErrorList(
+          [_('Input does not match our password policy')])
     return cleaned_data
