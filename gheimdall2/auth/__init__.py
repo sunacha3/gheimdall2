@@ -22,6 +22,8 @@ __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 ERR_UNKNOWN = 99
 NEW_AUTHTOK_REQD = 12
 
+import logging
+
 class AuthException(Exception):
 
   def __init__(self, reason, code):
@@ -39,6 +41,8 @@ class BaseAuthEngine(object):
   def authenticate(self, user_name, password, request):
     ret = self._authenticate(user_name, password)
     if ret:
+      logging.info('Logged in as %s from %s' %
+                   (user_name, request.META['REMOTE_ADDR']))
       self._postAuthHook(user_name, password)
     return ret
 
