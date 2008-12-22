@@ -17,7 +17,7 @@
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
 import logging, sys
-import zlib, base64, sha
+import zlib, base64, sha, md5
 import saml2
 import xmldsig as ds
 import time, random
@@ -46,6 +46,10 @@ def ldap_escape(data):
 def hash_password(password, hash_style):
   if hash_style == '{SHA}':
     return hash_style + base64.b64encode(sha.new(password).digest())
+  elif hash_style == '{MD5}':
+    return hash_style + base64.b64encode(md5.new(password).digest())
+  elif hash_style == '{CLEARTEXT}':
+    return password
 
   raise NotImplementedError('hash style is not implemented: %s.' % hash_style)
 

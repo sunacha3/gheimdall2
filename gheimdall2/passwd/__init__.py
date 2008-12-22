@@ -26,7 +26,7 @@ except ImportError:
 import atom
 import gdata.apps
 import gdata.apps.service
-import sha
+import sha, md5
 from gheimdall2 import appsclient
 import logging
 from gheimdall2 import utils
@@ -174,6 +174,9 @@ class BaseSyncPasswdEngine(BasePasswdEngine):
         sha_obj = sha.new(new_password)
         self.target_user.login.password = sha_obj.hexdigest()
         self.target_user.login.hash_function_name = 'SHA-1'
+      elif self.hash_function_name == 'MD5':
+        self.target_user.login.password = md5.new(new_password).hexdigest()
+        self.target_user.login.hash_function_name = 'MD5'
       else:
         self.target_user.login.password = new_password
       self.target_user = self.apps_client.UpdateUser(user_name,
