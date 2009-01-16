@@ -62,6 +62,8 @@ class RequestAuthEngine(BaseAuthEngine):
   def authenticate(self, user_name, password, request):
     ret = self._authenticateWithRequest(user_name, password, request)
     if ret:
+      logging.info('Logged in as %s from %s' %
+                   (user_name, request.META['REMOTE_ADDR']))
       self._postAuthHook(user_name, password)
     return ret
   def _authenticateWithRequest(self, user_name, password, request):
