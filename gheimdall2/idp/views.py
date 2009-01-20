@@ -118,8 +118,20 @@ def login_do(request):
   except Exception, e:
     logging.error(e)
     return render_error(request, _('Invalid SAMLRequest'), status=400)
-  user_name = request.POST.get('user_name')
-  password = request.POST.get('password')
+
+  if config.get('always_remember_me'):
+    login_form_cls = LoginForm
+  else:
+    login_form_cls = LoginFormWithCheckBox
+  login_form = login_form_cls(request.POST)
+  if not login_form.is_valid():
+    t = utils.gh_get_template(request, 'idp/login.html')
+    c = RequestContext(request, {'form': login_form,
+                                 'flash': utils.get_flash(request)})
+    return HttpResponse(t.render(c))
+    
+  user_name = login_form.cleaned_data.get('user_name')
+  password = login_form.cleaned_data.get('password')
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
   try:
     auth_engine.authenticate(user_name, password, request)

@@ -32,15 +32,16 @@ class ResetForm(forms.Form):
 class LoginForm(forms.Form):
   SAMLRequest = forms.CharField(label='SAMLRequest', widget=forms.HiddenInput)
   RelayState = forms.CharField(label='RelayState', widget=forms.HiddenInput)
-  user_name = forms.CharField(
+  user_name = forms.CharField(required=True,
     label=_('User Name:'), max_length=32, widget=forms.TextInput(
       attrs={'size': config.get('user_name_field_length', 32)}))
-  password = forms.CharField(
+  password = forms.CharField(required=True,
     label=_('Password:'), max_length=16, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
 
 class LoginFormWithCheckBox(LoginForm):
-  remember_me = forms.BooleanField(label=_('Remember me on this computer:'))
+  remember_me = forms.BooleanField(required=False,
+                                   label=_('Remember me on this computer:'))
 
 class PasswdForm(forms.Form):
   backURL = forms.CharField(label='backURL', widget=forms.HiddenInput,
