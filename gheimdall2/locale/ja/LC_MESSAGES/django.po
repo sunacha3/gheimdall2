@@ -68,6 +68,10 @@ msgstr "ユーザー名が取得できません"
 msgid "Invalid SAMLResponse"
 msgstr "SAMLResponseの値が不正です"
 
+#: idp/views.py:193
+msgid "Changing password is not available here"
+msgstr "ここではパスワードの変更は出来ません。"
+
 #: idp/views.py:241
 msgid "Failed to change password"
 msgstr "パスワードの変更に失敗しました。"
@@ -219,9 +223,6 @@ msgstr "ログアウトを続ける"
 #~ msgid "Password is expired. You need to set new password."
 #~ msgstr ""
 #~ "パスワードの期限が切れています。新しいパスワードを設定してください。"
-
-#~ msgid "Changing password is not available here"
-#~ msgstr "ここではパスワードの変更は出来ません。"
 
 #~ msgid "404 - No such page here"
 #~ msgstr "404 - そのようなページはありません     "

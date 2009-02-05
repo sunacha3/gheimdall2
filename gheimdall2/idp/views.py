@@ -190,7 +190,7 @@ def logout(request):
 
 def password(request):
   if not config.get("use_change_passwd"):
-    raise Http404
+    return render_error(request, _('Changing password is not available here'), status=404)
   # first retrieve user_name from request
   user_name = request.REQUEST.get('user_name')
   if user_name is None:
