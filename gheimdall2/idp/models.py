@@ -31,7 +31,8 @@ class ResetForm(forms.Form):
 
 class LoginForm(forms.Form):
   SAMLRequest = forms.CharField(label='SAMLRequest', widget=forms.HiddenInput)
-  RelayState = forms.CharField(label='RelayState', widget=forms.HiddenInput)
+  RelayState = forms.CharField(label='RelayState', widget=forms.HiddenInput,
+                               required=False)
   user_name = forms.CharField(required=True,
     label=_('User Name:'), max_length=32, widget=forms.TextInput(
       attrs={'size': config.get('user_name_field_length', 32)}))
