@@ -154,7 +154,8 @@ def create_saml_response(request, authn_request, RelayState, user_name,
                                                        authn_request,
                                                        valid_time,
                                                        auth_time,
-                                                       acsURL)
+                                                       acsURL,
+                                                       request)
   if request.session.get(const.ISSUERS, None) is None:
     request.session[const.ISSUERS] = {}
 
@@ -206,7 +207,7 @@ def parse_saml_request(request, meth):
 
 def extract_logout_data(request):
   SAMLRequest = request.REQUEST.get("SAMLRequest", None)
-  SAMLResponse = request.REQUEST.get("SAMLResonse", None)
+  SAMLResponse = request.REQUEST.get("SAMLResponse", None)
   RelayState = request.REQUEST.get("RelayState", None)
   return (SAMLRequest, SAMLResponse, RelayState)
 

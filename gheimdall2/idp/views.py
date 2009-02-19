@@ -170,7 +170,7 @@ def logout(request):
       utils.handle_logout_request(request, logout_request, decoded)
     except GHException, e:
       logging.error(e)
-      return utils.createLogoutResponse(request, RelayState, issuer_name,
+      return utils.send_logout_response(request, RelayState, issuer_name,
                                         logout_request.id,
                                         samlp.STATUS_RESPONDER)
   elif SAMLResponse:
