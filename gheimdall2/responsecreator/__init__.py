@@ -81,7 +81,7 @@ class ResponseCreator(object):
     return self.response
 
   def createAuthnResponse(self, user_name, authn_request, valid_time,
-                          auth_time, acsURL):
+                          auth_time, acsURL, request):
     self.user_name = user_name
     self.authn_request = authn_request
     response = samlp.ResponseFromString(EMPTY_SAML_RESPONSE)
@@ -102,7 +102,7 @@ class ResponseCreator(object):
     response.assertion[0].subject.subject_confirmation[0].subject_confirmation_data.recipient = acsURL
     self.response = response
     self.response.signature = self._get_signature()
-    self._adjustment()
+    self.__adjustment(request)
     return self.response
 
   def _get_signature(self):
@@ -123,6 +123,10 @@ class ResponseCreator(object):
 
   def _prepare(self, config):
     raise NotImplementedError('Child class must implement me.')
+
+  def __adjustment(self, request):
+    self._adjustment()
+    return None
 
   def _adjustment(self):
     return None
