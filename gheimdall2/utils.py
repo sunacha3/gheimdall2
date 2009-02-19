@@ -163,6 +163,7 @@ def create_saml_response(request, authn_request, RelayState, user_name,
     name=issuer, status=sp.STATUS_LOGIN,
     assertion_id=saml_response.assertion[0].id,
     name_id=saml_response.assertion[0].subject.name_id)
+  request.session.modified = True
 
   if issuer.startswith('google.com') and RelayState is not None and \
          RelayState.find('continue=https') >= 0:
