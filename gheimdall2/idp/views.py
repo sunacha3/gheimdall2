@@ -91,6 +91,29 @@ def login(request):
       logging.error('use_header_auth is set to true,'
                     ' but can not retrieve user_name from header.')
       return render_error(request, _('Can not retrieve user_name'), status=400)
+
+  # TODO: implement cookie auth
+  if config.get('use_cookie_auth'):
+    logging.debug('cookie_auth start.')
+    import cookie_auth
+    cookie_auth_engine = cookie_auth.createCookieAuthEngine(
+      config.get('cookie_auth_engine'),
+      config)
+    logging.debug('engine: %s' % cookie_auth_engine)
+    try:
+      cookie_auth_username = cookie_auth_engine.authenticate(request)
+      return utils.create_saml_response(request, authn_request, RelayState,
+                                        cookie_auth_username)
+    except cookie_auth.AuthException, e:
+      logging.info('Cookie auth failed. Reason: %s' % e)
+      if config.get('fallback_on_cookie_auth_failure'):
+        logging.info('Fallback on cookie auth failure.')
+      else:
+        logging.info('use_cookie_auth is set to true,'
+                      ' but can not verify cookie and'
+                      ' retrieve user_name from cookie.')
+        return render_error(request, _('Can not login'), status=401)
+    
   if utils.is_user_authenticated(request):
     return utils.create_saml_response(request, authn_request, RelayState,
                                       request.session.get(const.USER_NAME),
