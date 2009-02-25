@@ -95,7 +95,7 @@ def login(request):
   # TODO: implement cookie auth
   if config.get('use_cookie_auth'):
     logging.debug('cookie_auth start.')
-    import cookie_auth
+    from gheimdall2 import cookie_auth
     cookie_auth_engine = cookie_auth.createCookieAuthEngine(
       config.get('cookie_auth_engine'),
       config)

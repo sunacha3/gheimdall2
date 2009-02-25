@@ -20,7 +20,7 @@
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
 import logging
-import cookie_auth
+from gheimdall2 import cookie_auth
 
 class GrnOpenAuthEngine(cookie_auth.BaseCookieAuthEngine):
 
