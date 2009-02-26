@@ -11,23 +11,19 @@ Table of contents
 1.3. Platform
 2. Install
 2.1. Dependencies
-2.2. Installation of gheimdall
+2.2. Installation of GHeimdall2
 2.3. Preparation
 2.3.1. Enable SSO
 2.3.2. Creating a key pair
 2.4. Settings
 2.5. Apache settings
-2.5.1. Run gheimdall with mod_proxy
-2.5.2. Run gheimdall with mod_python
+2.5.1. Run GHeimdall2 with mod_python
 2.6. PAM settings
-2.7. Prepare log directory
-2.8. Run GHeimdall
-2.9. Startup script
-3. Extend GHeimdall
+2.7. Prepare directories
+3. Extend GHeimdall2
 3.1. Common rule
 3.2. Create an authenticate module
 3.3. Create a change-passwords module
-3.4. Create a username mapper module
 
 
 1. Overview
@@ -46,28 +42,28 @@ passwords for an option.
  GHeimdall2 also has a capability for SLO service. Now GHeimdall2
  supports only HTTP-POST binding for SLO service.
 
- 1.1.2. Things which GHeimdall2 can not do.
+ 1.1.2. Things that GHeimdall2 can not do.
 
  To create and delete Google Apps account. To synchronize accounts
  data between Google Apps and your back end.
 
 1.2. Plug-in architecture
 
-GHeimdall2 adopts a simple plug-in architecture. You can use plug-ins
-for at following functionalities. When plug-ins included in GHeimdall2
-can not satisfy your needs, you can develop your own plug-ins for your
-needs.
+GHeimdall2 adopts a simple plug-in architecture. You can use various
+plug-ins for following functionalities. When plug-ins included in
+GHeimdall2 can not satisfy your needs, you can develop your own
+plug-ins that fills your needs.
 
  1) Authentication
 
     You can choose an authentication plug-in for your authentication
     back end. GHeimdall2 initially includes both of PAM authentication
     plug-in and LDAP authentication plug-in. GHeimdall2 also have an
-    functionality for HTTP header authentication. When you turned on
-    this functionality, GHeimdall2 will assume the value of specified
-    HTTP header as their user name. It is useful when users are
-    already authenticated by Apache's basic authentication, or by
-    their client certificate.
+    functionality for HTTP header authentication and cookie
+    authentication. When you turned on HTTP header authentication,
+    GHeimdall2 will assume the value of specified HTTP header as their
+    user name. It is useful when users are already authenticated by
+    Apache's basic authentication, or by their client certificate.
 
  2) User name mapping
 
@@ -77,22 +73,22 @@ needs.
 
  3) Changing passwords
 
-    You can plug-in a functionality of changing users'
+    You can plug-in a function of changing users'
     passwords. GHeimdall2 initially includes both of PAM and LDAP
     changing-password plug-ins.
 
 1.3. Platform
 
-Now, I tested GHeimdall2 under CentOS5 and Debian/sid.
+For now, I've tested GHeimdall2 under CentOS5 and Debian/sid.
 
 2. Install
 
 2.1. Dependencies
 
-Following are set of software which must be installed for
-GHeimdall2. Please install these software.
+Following are the set of software that must be installed for running
+GHeimdall2. Please install these software beforehand.
 
-  1) Apache web server 
+  1) Apache web server (or any other equivalent)
   2) Django 1.0 or higher
      http://www.djangoproject.com/
   3) PyXMLSec
@@ -114,7 +110,7 @@ GHeimdall2. Please install these software.
 
 2.2. Installation of GHeimdall2
 
-It is easy to install gheimdall2.
+It is easy to install gheimdall2 from source tarball.
 
 $ tar xjvf gheimdall2-x.y.tar.bz2
 $ cd gheimdall2-x.y/gheimdall2
@@ -123,13 +119,15 @@ $ cd ..
 $ python setup.py build
 $ sudo python setup.py install 
 
+TODO: yum and apt-line
+
 2.3. Preparation
 
  2.3.1. Enable SSO
 
  You have to enable SSO Service on Google Apps's web
  console. Additionally, you must set some of following URLs on the
- console. By default, following are the URLs for each functionalyty.
+ console. By default, the URLs for each function are following.
 
   1. Login
      http://your.domain.example.com/gheimdall2/login 
@@ -142,46 +140,79 @@ $ sudo python setup.py install
 
  You need to generate an rsa or dsa key pair for Google Apps SSO
  Service. Here is an example which shows how to generate an rsa key
- pair using openssl. (Yet lacking of attention in this example, you
- should take care of the permission of generated private key.)
+ pair using openssl. (Though not mentioned in this example, you should
+ take care of the permission of generated private key.)
 
 # openssl genrsa -des3 -out privkey.pem 2048 
 # openssl rsa -in privkey.pem -out privkey-nopass.pem 
 # openssl rsa -in privkey-nopass.pem -pubout -outform DER -out publickey.der
 
  You can use privkey-nopass.pem as private key, and publickey.der as
- public key. Please upload the public key on Google Apps web console.
+ public key. Please don't forget to upload the public key on Google
+ Apps web console.
 
 2.4. Settings
 
 Let's glance through all settings of this program.
 
+var_directory
+  description: Set a directory name to store gheimdall2 data.
+  example: '/var/gheimdall2'
+
+issuer_name
+  description: Set a name as an issuer.
+  example: 'http://yourdomain.example.com/gheimdall2'
+
+session_lifetime
+  description: Set idp's session lifetime in seconds.
+  example: 28800 # 8 hours
+
+always_remember_me
+  description: If set to True, the 'Remember me on this computer'
+  checkbox will disappear and Gheimdall2 will always remember the
+  username of the user.
+
 apps_domain 
-  description: Set your Google Apps domain.
+  description: Set your Google Apps domain name.
   example: 'example.com' 
 
 privkey_filename 
   description: Set fullpath of private key generated on instruction 2.3.2.
   example: '/some/where/privkey-nopass.pem' 
 
+privkey_type
+  description: Set rsa/dsa according to the type of the private key.
+  example: rsa
+
 auth_engine 
   description: Set module name for authentication.
   example: 'pam' 
 
-pam_appname 
+time_allowance
+  description: TODO
+  example: 10
+
+sleep_time
+  description: Sleep time in second when user fails to login.
+  example: 3
+
+pam_appname
   description: Set pam service name.
   example: 'gheimdall' 
 
-uname_mapper 
-  description: Set module name for username mapper.
-  example: 'null' 
+default_response_creator
+  description: Set response creator modulename. If you don't sure,
+               leave it as 'default'.
+  example: default
 
 use_change_passwd 
   description: Set whether you want use change-passwords functionality.
   example: True
 
 use_reset_passwd
-  description: Set whether you want use reset-passwords functionality.
+  description: Set to True when you want to use 'Reset password'
+               feature. Don't forget to set appropriate permission for
+               this URL when you use this feature.
   example: False
 
 passwd_engine 
@@ -192,8 +223,17 @@ passwd_regex
   description: Set regexp for password policy.
   example: '^.{8,}$' 
 
+password_cannot_contain_username
+  description: When set to True, the password contains username will
+               be rejected.
+  example: True
+
 use_header_auth 
   description: Set whether you want use HTTP header authentication.
+  example: False
+
+use_static_login
+  description: TODO
   example: False
 
 auth_header_key 
@@ -238,59 +278,33 @@ ldap_passwd_hash_style
   description: Set ldap password hash style.
   example: '{SHA}'
 
-issuer_name
-  description: Set issuer name for IDP.
-  example: https://example.com/idp
+user_name_field_length
+  description: The length of the user name field.
+  example: 32
 
-session_lifetime
-  description: How many seconds GHeimdall would keep users' login
-               sessions for.
-  example: 28800
+password_field_length
+  description: The length of the password field.
+  example: 24
 
-always_remember_me
-  description: Set to True when you don't want to use 'remember me on
-               this computer' checkbox. If set to True, GHeimdall
-               always remember user's login.
-  example: False
+logout_request_urls section
+  description: Set the Service Provider's name as its keys and the
+               URLs of endpoints for logout request as its values.
+  example: http://example.com/sp1 = "http://example.com/sp1/logout"
 
-privkey_type
-  description: Set rsa/dsa according to the type of the private key.
-  example: rsa
+logout_response_urls section
+  description: Set the Service Provider's name as its keys and the
+               URLs of endpoints for logout response as its values.
+  example: http://example.com/sp1 = "http://example.com/sp1/logout"
 
-default_response_creator
-  description: Set response creator classname. If you don't sure,
-               leave it 'default'.
-  example: default
+respones_creators section
+  description: Set the Service Provider's name as its keys and
+               response creator's modulenames as its values.
+  example: http://example.com/sp1 = "custom"
 
-logout_request_urls
-  description: Set the dictionary which uses Service Provider's name
-               as its keys and the URLs of endpoints for logout
-               request as its values.
-  example: {"http://example.com/sp1": "http://example.com/sp1/logout"}
-
-logout_response_urls
-  description: Set the dictionary which uses Service Provider's name
-               as its keys and the URLs of endpoints for logout
-               response as its values.
-  example: {"http://example.com/sp1": "http://example.com/sp1/logout"}
-
-respones_creators
-  description: Set the dictionary which uses Service Provider's name
-               as its keys and response creator's classnames as its
-               values.
-  example: {"http://example.com/sp1": "custom"}
-
-public_keys
-  description: Set the dictionary which uses Service Provider's name
-               as its keys and Service Provider's public key filenames
-               as its values.
-  example: {"http://example.com/sp1": "/etc/gheimdall/sp1.pubkey"}
-
-use_reset_passwd
-  description: Set to True when you want to use 'Reset password'
-               feature. Don't forget to set appropriate permission for
-               this URL when you use this feature.
-  example: False
+public_keys section
+  description: Set the Service Provider's name as its keys and Service
+               Provider's public key filenames as its values.
+  example: http://example.com/sp1 =  "/etc/gheimdall/sp1.pubkey"
 
 2.5. Apache settings
 
@@ -298,7 +312,7 @@ GHeimdall2 is designed to run behind apache with mod_python.
 
  2.5.1. Run GHeimdall2 with mod_python
 
- First, copy docss/gheimdall2-modpython.sample to
+ First, copy docs/gheimdall2-modpython.sample to
  /etc/httpd/conf.d/gheimdall2.conf or similar place.  Second, edit
  configuration files and restart Apache.
 
@@ -310,13 +324,14 @@ it appropriately. And you need to configure PAM module too.
 
 2.7. Prepare directories
 
-By default, log directory is /var/log/gheimdall2, and session files
-are stored in /var/gheimdall2. Please make these directories, and
-configure permissions of these directories that GHeimdall2 running
+By default, log directory is /var/log/gheimdall2, and some data and
+session files are stored in /var/gheimdall2/ and
+/var/gheimdall2/session dhirectories. Please make these directories,
+and configure permissions of these directories that GHeimdall2 running
 uid/gid can write in these direcotries. For example, if GHeimdall2 is
 running with mod_python, configure permissions for apache to write.
 
-3. Extend GHeimdall
+3. Extend GHeimdall2
 
 3.1. Common rule
 
@@ -333,7 +348,7 @@ under gheimdall2/auth directory, and define a class extended from
 gheimdall2.auth.BaseAuthEngine inside the module. In this class, you
 have to implement _prepare(self, config) and _authenticate(self,
 user_name, password) instance methods. There is a sample module,
-gheimdall/auth/sample.py is for your reference.
+gheimdall/auth/sample.py that will be a reference for you.
 
 Following are the rules for each methods.
 
