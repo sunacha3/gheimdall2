@@ -35,7 +35,8 @@ def pam_conv(auth, query_list):
       else:
         resp.append((data.get('old_password'), 0))
     elif type == PAM.PAM_ERROR_MSG or type == PAM.PAM_TEXT_INFO:
-      resp.append(('', 0));
+      str = ''
+      resp.append((str, 0));
     else:
       return None
   return resp
