@@ -42,6 +42,10 @@ def static_login(request):
                         status=501)
   user_name = request.POST.get('user_name')
   password = request.POST.get('password')
+  if config.get("use_encrypted_AES"):
+    from gheimdall2.cryptAES import createAES
+    AES = createAES(config)
+    password = AES.decryption_str(password)
   auth_engine = auth.createAuthEngine(config.get('auth_engine'), config)
   try:
     auth_engine.authenticate(user_name, password, request)
