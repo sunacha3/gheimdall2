@@ -37,7 +37,7 @@ class LoginForm(forms.Form):
     label=_('User Name:'), max_length=32, widget=forms.TextInput(
       attrs={'size': config.get('user_name_field_length', 32)}))
   password = forms.CharField(required=True,
-    label=_('Password:'), max_length=16, widget=forms.PasswordInput(
+    label=_('Password:'), max_length=32, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
 
 class LoginFormWithCheckBox(LoginForm):
@@ -54,15 +54,15 @@ class PasswdForm(forms.Form):
   user_name = forms.CharField(label=_('User Name:'), 
                               widget=forms.HiddenInput())
   old_password = forms.CharField(
-    label=_('Old password:'), max_length=16, widget=forms.PasswordInput(
+    label=_('Old password:'), max_length=32, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
   new_password = forms.RegexField(
     error_messages={'invalid': _('Input does not match our password policy')},
     regex=config.get('passwd_regex'),
-    label=_('New password:'), max_length=16, widget=forms.PasswordInput(
+    label=_('New password:'), max_length=32, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
   password_confirm = forms.CharField(
-    label=_('Confirm:'), max_length=16, widget=forms.PasswordInput(
+    label=_('Confirm:'), max_length=32, widget=forms.PasswordInput(
       attrs={'size': config.get('password_field_length', 24)}))
   def clean(self):
     cleaned_data = self.cleaned_data
