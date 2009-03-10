@@ -102,7 +102,7 @@ class ResponseCreator(object):
     response.assertion[0].subject.subject_confirmation[0].subject_confirmation_data.recipient = acsURL
     self.response = response
     self.response.signature = self._get_signature()
-    self.__adjustment(request)
+    self.adjustment(request)
     return self.response
 
   def _get_signature(self):
@@ -124,7 +124,7 @@ class ResponseCreator(object):
   def _prepare(self, config):
     raise NotImplementedError('Child class must implement me.')
 
-  def __adjustment(self, request):
+  def adjustment(self, request):
     self._adjustment()
     return None
 
