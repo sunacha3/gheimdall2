@@ -4,7 +4,6 @@ syntax: glob
 *.elc
 *.pyc
 *~
-*.mo
 *.swp
 settings-local.py
 gheimdall2-local.conf
