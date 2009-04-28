@@ -21,6 +21,7 @@ import zlib, base64, sha, md5
 import saml2
 import xmldsig as ds
 import time, random
+import crypt
 from saml2 import saml, samlp
 from saml2 import utils as samlutils
 from django.http import HttpResponse, HttpResponseRedirect
@@ -48,6 +49,11 @@ def hash_password(password, hash_style):
     return hash_style + base64.b64encode(sha.new(password).digest())
   elif hash_style == '{MD5}':
     return hash_style + base64.b64encode(md5.new(password).digest())
+  elif hash_style == '{CRYPT}':
+    chars = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    rng = random.Random()
+    salt = rng.choice(chars) + rng.choice(chars)
+    return hash_style + crypt.crypt(password, salt)
   elif hash_style == '{CLEARTEXT}':
     return password
 
