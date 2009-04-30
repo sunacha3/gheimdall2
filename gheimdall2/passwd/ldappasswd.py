@@ -41,6 +41,8 @@ class LdapPasswdEngine(passwd.BaseSyncPasswdEngine):
     self.ldap_rootdn = config.get('ldap_rootdn')
     self.ldap_rootpw = config.get('ldap_rootpw')
     self.ldap_passwd_hash_style = config.get('ldap_passwd_hash_style')
+    self.ldap_send_old_password = config.get('ldap_send_old_password',
+                                             True)
 
   def _checkLocalUser(self, user_name):
     ldapHandle = None
@@ -125,7 +127,10 @@ class LdapPasswdEngine(passwd.BaseSyncPasswdEngine):
 
       # change password
       ldapHandle.simple_bind_s(who=dn, cred=old_password)
-      ldapHandle.passwd_s(dn, old_password, new_password)
+      if self.ldap_send_old_password:
+        ldapHandle.passwd_s(dn, old_password, new_password)
+      else:
+        ldapHandle.passwd_s(dn, None, new_password)
       ldapHandle.unbind_s()
     except Exception, e:
       if ldapHandle is not None:
