@@ -22,7 +22,7 @@ from django.core.urlresolvers import reverse
 from gheimdall2.conf import config
 from gheimdall2.idp.models import LoginForm, LoginFormWithCheckBox, PasswdForm
 from gheimdall2.idp.models import ResetForm
-from gheimdall2 import utils, settings, const, auth, errors, passwd
+from gheimdall2 import utils, const, auth, errors, passwd
 from gheimdall2.errors import GHException
 from django.utils.translation import ugettext as _
 from saml2 import samlp
