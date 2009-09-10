@@ -135,6 +135,42 @@ def init_session(request, user_name):
     if not config.get('use_header_auth'):
       request.session[const.REMEMBER_ME] = True
 
+def sign_message(saml_message):
+  if config.get('use_subproccess_for_signing', False):
+    import os.path
+    from subprocess import Popen, PIPE
+    sign_command = os.path.join(os.path.dirname(__file__), 'gh2-sign.py')
+    p = Popen(["python", sign_command], stdout=PIPE, stdin=PIPE, bufsize=1)
+    p.stdin.write(saml_message.ToString().replace("\n", "")+"\n")
+    p.stdin.write(config.get('privkey_filename')+"\n")
+    results = "".join(p.stdout.readlines())
+    p.wait()
+    if p.returncode != 0:  
+      raise GHException(results)
+    signed_message = results
+  else:
+    signed_message = saml2.utils.sign(saml_message.ToString(),
+                                      config.get('privkey_filename'))
+  return signed_message
+
+def verify_message(saml_message, key):
+  if config.get('use_subproccess_for_signing', False):
+    import os.path
+    from subprocess import Popen, PIPE
+    verify_command = os.path.join(os.path.dirname(__file__), 'gh2-verify.py')
+    p = Popen(["python", verify_command], stdout=PIPE, stdin=PIPE, bufsize=1)
+    p.stdin.write(key+"\n")
+    p.stdin.write(saml_message)
+    p.stdin.close()
+    results = "".join(p.stdout.readlines())
+    p.wait()
+    if p.returncode != 0:  
+      logging.warn("Failed to verify a message. %s" % results)
+      return False
+    return True
+  else:
+    return saml2.utils.verify(saml_message, key)
+
 def create_saml_response(request, authn_request, RelayState, user_name,
                          set_time=True):
   """ Returns HttpResponse object
@@ -180,8 +216,7 @@ def create_saml_response(request, authn_request, RelayState, user_name,
     request.session[const.VALID_TIME] = valid_time  
 
   if authn_request.protocol_binding == saml2.BINDING_HTTP_POST:
-    signed_response = saml2.utils.sign(saml_response.ToString(),
-                                       config.get('privkey_filename'))
+    signed_response = sign_message(saml_response)
     encoded_response = base64.encodestring(signed_response)
     t = gh_get_template(request,'idp/login-success.html')
     c = RequestContext(request, {'acsURL': acsURL,
@@ -297,8 +332,7 @@ def send_logout_request(request, RelayState, issuer_name, session_index,
                         name_id):
   response_creator = responsecreator.create("default", config)
   logout_request = response_creator.createLogoutRequest(session_index, name_id)
-  signed_request = saml2.utils.sign(logout_request.ToString(),
-                                    config.get('privkey_filename'))
+  signed_request = sign_message(logout_request)
   logout_url = config.get("logout_request_urls").get(issuer_name)
   t = gh_get_template(request, 'idp/logout-post.html')
   c = RequestContext(request, {'param_name': 'SAMLRequest',
@@ -311,8 +345,7 @@ def send_logout_response(request, RelayState, issuer_name, req_id,
                          status_code):
   response_creator = responsecreator.create("default", config)
   logout_response = response_creator.createLogoutResponse(req_id, status_code)
-  signed_response = saml2.utils.sign(logout_response.ToString(),
-                                     config.get('privkey_filename'))
+  signed_response = sign_message(logout_response)
   logout_url = config.get("logout_response_urls").get(issuer_name)
   t = gh_get_template(request, 'idp/logout-post.html')
   c = RequestContext(request,
@@ -335,7 +368,7 @@ def handle_logout_response(request, logout_response, decoded_response):
   if key_file is None:
     raise GHException('Failed to get public key filename.'
                       ' issuer: %s' % issuer_name)
-  if samlutils.verify(decoded_response, key_file) == False:
+  if verify_message(decoded_response, key_file) == False:
     raise GHException('Failed verifyng the signature'
                       ' of logout response.')
   issuers = request.session.get(const.ISSUERS, {})
@@ -359,7 +392,7 @@ def handle_logout_request(request, logout_request, decoded_request):
   if key_file is None:
     raise GHException('Failed to get public key filename.'
                       ' issuer: %s' % issuer_name)
-  if samlutils.verify(decoded_request, key_file) == False:
+  if verify_message(decoded_request, key_file) == False:
     raise GHException('Failed verifyng the signature'
                       ' of logout request.')
 
