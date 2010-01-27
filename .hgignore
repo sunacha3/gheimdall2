@@ -6,6 +6,7 @@ syntax: glob
 *~
 *.swp
 settings-local.py
+settings_local.py
 gheimdall2-local.conf
 
 syntax: regexp
