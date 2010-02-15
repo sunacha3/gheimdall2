@@ -173,7 +173,8 @@ def login_do(request):
     redirect_url = reverse(login)
     SAMLRequest = request.POST.get("SAMLRequest", None)
     redirect_url += '?' + urllib.urlencode({'SAMLRequest': SAMLRequest,
-                                            'RelayState': RelayState})
+                                            'RelayState': RelayState,
+                                            'guid': "on"})
     return HttpResponseRedirect(redirect_url)
   # User has authenticated
   utils.init_session(request, user_name)
