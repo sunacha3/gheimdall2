@@ -93,6 +93,7 @@ class MobileUidAccessControlMiddleware(object):
                         " and cant get the serialnumber")
           return HttpResponseForbidden("Your mobile phone is not allowed.")
     docomo_ips = cidr.get_ip('docomo')
+    docomo_ips.append(IP("210.153.87.0/24"))
     for iprange in docomo_ips:
       if client_ip in iprange and request.device.is_nonmobile():
         logging.debug("Client is docomo with full browser presumably,"
