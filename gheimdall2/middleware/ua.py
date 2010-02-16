@@ -19,7 +19,10 @@ __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 import sys
 import logging
 
-from uamobile import detect
+from IPy import IP
+from uamobile import (
+  detect, cidr
+)
 try:
   from uamobile.exceptions import NoMatchingError
 except Exception:
@@ -65,7 +68,38 @@ class MobileUidAccessControlMiddleware(object):
   def process_request(self, request):
     if not hasattr(request, "device"):
       raise ImproperlyConfigured("You must use UserAgentMobileMiddleware.")
-    if request.device.is_nonmobile():
+
+    is_full_browser = False
+    client_ip = request.META.get(
+      'HTTP_X_FORWARDED_FOR',
+      request.META.get(
+        'HTTP_CLIENT_IP',
+        request.META.get('REMOTE_ADDR', None)))
+    if client_ip.find(",") >= 0:
+      client_ip = client_ip[:client_ip.find(",")]
+    if client_ip is None:
+      logging.debug("Cant get client's ip.")
+      return HttpResponseForbidden("Cant get your ip.")
+    sb_fullbrowser_ips = [IP("123.108.237.224/27"), IP("202.253.96.0/28")]
+    for iprange in sb_fullbrowser_ips:
+      if client_ip in iprange:
+        import re
+        m = re.match(r'.*SN(\d+).*', request.device.useragent)
+        if m:
+          setattr(request.device, 'serialnumber', m.groups()[0])
+          is_full_browser = True
+        else:
+          logging.debug("Client is softbank with full browser presumably,"
+                        " and cant get the serialnumber")
+          return HttpResponseForbidden("Your mobile phone is not allowed.")
+    docomo_ips = cidr.get_ip('docomo')
+    docomo_ips.append(IP("210.153.87.0/24"))
+    for iprange in docomo_ips:
+      if client_ip in iprange and request.device.is_nonmobile():
+        logging.debug("Client is docomo with full browser presumably,"
+                      " access rejected.")
+        return HttpResponseForbidden("Your mobile phone is not allowed.")
+    if request.device.is_nonmobile() and is_full_browser is False:
       return
     if self.access_controller.check_authorization(request):
       return
