@@ -12,6 +12,7 @@ urlpatterns = patterns(
   url(r'^admin/reset_password$', 'reset_password', name='reset_password'),
   url(r'^admin/reset_password.do$', 'reset_password_do',
       name='reset_password_do'),
+  url(r'^ga_pixel$', 'ga_pixel', name='ga_pixel'),
 )
 
 if settings.DEBUG:
