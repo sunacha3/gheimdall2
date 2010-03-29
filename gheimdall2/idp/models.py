@@ -66,6 +66,7 @@ class PasswdForm(forms.Form):
       attrs={'size': config.get('password_field_length', 24)}))
   def clean(self):
     cleaned_data = self.cleaned_data
+    old_password = cleaned_data.get('old_password')
     new_password = cleaned_data.get('new_password')
     if new_password is None:
       # It must be that regex check didn't pass.
@@ -80,6 +81,11 @@ class PasswdForm(forms.Form):
       user_name = cleaned_data.get('user_name')
       if re.compile(user_name, re.I).search(new_password):
         logging.warn('New password contains username, rejected.')
+        self._errors['new_password'] = ErrorList(
+          [_('Input does not match our password policy')])
+    if config.get('password_should_not_be_same_as_old_password', False):
+      if old_password == new_password:
+        logging.warn('New password is the same as old password, rejected.')
         self._errors['new_password'] = ErrorList(
           [_('Input does not match our password policy')])
     return cleaned_data

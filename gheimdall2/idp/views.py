@@ -16,23 +16,34 @@
 
 __author__ = 'tmatsuo@sios.com (Takashi MATSUO)'
 
+import logging, sys, time
+import urllib
+
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from saml2 import samlp
+
 from gheimdall2.conf import config
 from gheimdall2.idp.models import LoginForm, LoginFormWithCheckBox, PasswdForm
 from gheimdall2.idp.models import ResetForm
 from gheimdall2 import utils, const, auth, errors, passwd
 from gheimdall2.errors import GHException
-from django.utils.translation import ugettext as _
-from saml2 import samlp
-import logging, sys, time
-import urllib
+
+from gheimdall2.ga import track_page_view
 
 def render_error(request, message, status=500):
   t = utils.gh_get_template(request, 'idp/error.html')
   c = RequestContext(request, {'message': message})
   return HttpResponse(t.render(c), status=status)
+
+def ga_pixel(request):
+  gif_response = track_page_view(request.META)
+  response = HttpResponse(gif_response['response_body'], status=200)
+  for (header_key, header_val) in gif_response['response_headers']:
+    response[header_key] = header_val
+  return response
   
 def static_login(request):
   if not config.get("use_static_login"):
