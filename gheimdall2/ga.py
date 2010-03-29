@@ -2,7 +2,12 @@
 Python implementation of ga.php.  
 """
 import re
-from hashlib import md5
+
+try:
+  from hashlib import md5
+except ImportError:
+  from md5 import new as md5
+
 from random import randint
 import struct
 import httplib2
