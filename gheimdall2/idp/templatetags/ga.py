@@ -11,9 +11,8 @@ register = template.Library()
 @register.simple_tag
 def ga():
   ga_account = config.get("ga_account")
-  if ga_account is None:
-    return ""
-  return """<script type="text/javascript">
+  if ga_account:
+    return """<script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%%3E%%3C/script%%3E"));
 </script>
@@ -22,6 +21,8 @@ try {
 var pageTracker = _gat._getTracker("%s");
 pageTracker._trackPageview();
 } catch(err) {}</script>""" % ga_account
+  else:
+    return ""
 
 @register.simple_tag
 def ga_mobile(request):
@@ -39,12 +40,13 @@ def ga_mobile(request):
 
   ga_pixel_url = config.get("ga_pixel_url")
   ga_mobile_account = config.get("ga_mobile_account")
-  if ga_pixel_url is None or ga_mobile_account is None:
+  if ga_pixel_url is None or ga_mobile_account is None or \
+        ga_mobile_account == "":
     return ''
 
-  referer = quote_plus(request.META.get('HTTP_REFERER', ''))
+  referer = quote_plus(request.META.get('HTTP_REFERER', '-'))
 
-  path = quote_plus(request.META.get('REQUEST_URI', ''))
+  path = quote_plus(request.get_full_path())
     
   src = ga_pixel_url + \
    "?utmac=" + ga_mobile_account + \
